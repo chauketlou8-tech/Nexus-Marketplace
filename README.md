@@ -5,7 +5,7 @@
 ![Backend](https://img.shields.io/badge/backend-Node.js-green)
 ![Python](https://img.shields.io/badge/analytics-Python-orange)
 ![Java](https://img.shields.io/badge/desktop-Java-red)
-![License](https://img.shields.io/badge/license-CHL-lightgrey)
+![License](https://img.shields.io/badge/license-CHKH-lightgrey)
 
 ---
 
@@ -210,4 +210,4 @@ This project goes beyond a typical student project by demonstrating:
 
 ## 📄 License
 
-CHL License
+CHKH License
