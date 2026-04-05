@@ -1,0 +1,21 @@
+{
+  "name": "marketplace",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Multi-vendor marketplace with analytics and multi-platform frontend",
+  "scripts": {
+    "dev:web": "npm run dev --prefix frontend/web",
+    "dev:backend": "npm run dev --prefix backend-node",
+    "dev:python": "cd python-analytics && uvicorn main:app --reload",
+    "install:all": "npm install --prefix frontend/web && npm install --prefix backend-node",
+    "start": "concurrently \"npm run dev:web\" \"npm run dev:backend\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "author": {
+    "name": "Tlou Elvis Chauke",
+    "email": "chauketlou8@gmail.com",
+    "altEmail": "chktlo003@myuct.ac.za"
+  }
+}

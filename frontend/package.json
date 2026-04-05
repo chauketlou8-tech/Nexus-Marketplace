@@ -1,0 +1,15 @@
+{
+  "name": "frontend",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Frontend workspace (web, mobile, desktop)",
+  "scripts": {
+    "web": "npm run dev --prefix web",
+    "mobile": "npm start --prefix mobile"
+  },
+  "author": {
+    "name": "Tlou Elvis Chauke",
+    "email": "chauketlou8@gmail.com",
+    "altEmail": "chktlo003@myuct.ac.za"
+  }
+}

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/Java Admin/Java Admin.iml" filepath="$PROJECT_DIR$/Java Admin/Java Admin.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/Nexus-Marketplace.iml" filepath="$PROJECT_DIR$/.idea/Nexus-Marketplace.iml" />
+      <module fileurl="file://$PROJECT_DIR$/frontend/desktop/java-client/java-client.iml" filepath="$PROJECT_DIR$/frontend/desktop/java-client/java-client.iml" />
+    </modules>
+  </component>
+</project>
