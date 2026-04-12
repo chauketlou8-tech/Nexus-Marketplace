@@ -1,10 +1,15 @@
+import { Routes, Route } from 'react-router-dom';
+import LoginPage from "./pages/LoginPage.tsx";
+import SignupPage from "./pages/SignupPage.tsx";
+
 function App() {
 
 
   return (
-    <>
-        <h2 className="bg-red-600">Welcome to Nexus Marketplace web interface</h2>
-    </>
+      <Routes>
+          <Route path="/" element={<LoginPage />} />
+          <Route path="SignupPage" element={<SignupPage/>} />
+      </Routes>
   )
 }
 
