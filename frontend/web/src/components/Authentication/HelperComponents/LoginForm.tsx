@@ -1,6 +1,14 @@
 import { Mail, Lock } from "lucide-react"
 
-export default function Form(){
+// @ts-ignore
+interface LoginPageProps {
+    setLogin?: (value: (((prevState: boolean) => boolean) | boolean)) => void,
+    setSignIn?: (value: (((prevState: boolean) => boolean) | boolean)) => void,
+    setForgotPassword?: (value: (((prevState: boolean) => boolean) | boolean)) => void,
+}
+
+export default function Form({ setLogin, setSignIn, setForgotPassword }: LoginPageProps){
+    console.log(setForgotPassword)
     return (
         <form noValidate={true} className="flex flex-col items-start justify-center bg-white rounded-[10px] p-[2rem] shadow-lg w-full max-w-[800px] gap-4">
             <div className="flex flex-col">
@@ -28,7 +36,11 @@ export default function Form(){
             </div>
 
             <button className="flex justify-center items-center w-full bg-black text-white rounded-[5px] p-[8px] mt-2">Sign in</button>
-            <p className="flex justify-center items-center w-full text-[14px] gap">Don't have an account? <a href="#" className="text-blue-500 font-[600] text-[16px] ml-1">Sign Up</a></p>
+            <p className="flex justify-center items-center w-full text-[14px] gap">Don't have an account? <a href="#" className="text-blue-500 font-[600] text-[16px] ml-1" onClick={() => {
+                setLogin?.(false);
+                setSignIn?.(true);
+            }}
+            >Sign Up</a></p>
         </form>
     )
 }
