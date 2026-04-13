@@ -1,7 +1,7 @@
 import { useState } from "react";
 import LoginPage from "../components/Authentication/LoginPage.tsx";
 import SignupPage from "../components/Authentication/SignupPage.tsx";
-import ForgotPasswordPage from "../components/ForgotPassword.tsx";
+import ForgotPasswordPage from "../components/Authentication/ForgotPassword.tsx";
 
 export default function Authentication() {
     const [isLogin, setLogin] = useState(true);

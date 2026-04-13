@@ -9,8 +9,7 @@ interface LoginPageProps {
 
 export default function LoginPage({setLogin, setSignIn, setForgotPassword}: LoginPageProps) {
     return (
-        <div
-            className="flex items-center justify-between bg-blue-50/20 rounded-[2rem] p-[2rem] px-[8rem] gap-5 w-full min-h-screen">
+        <div className="flex items-center justify-between bg-blue-50/20 rounded-[2rem] p-[2rem] px-[8rem] gap-5 w-full min-h-screen">
             <WelcomePage/>
             <Form setLogin={setLogin} setSignIn={setSignIn} setForgotPassword={setForgotPassword}/>
         </div>

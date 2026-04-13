@@ -1,3 +1,6 @@
+import WelcomePage from "./HelperComponents/WelcomePage.tsx";
+import SignupForm from "./HelperComponents/SignupForm.tsx";
+
 interface SignupPageProps {
     setLogin?: (value: (((prevState: boolean) => boolean) | boolean)) => void,
     setSignIn?: (value: (((prevState: boolean) => boolean) | boolean)) => void,
@@ -5,8 +8,10 @@ interface SignupPageProps {
 }
 
 export default function SignupPage({setLogin, setSignIn, setForgotPassword}: SignupPageProps) {
-    console.log(setLogin, setSignIn, setForgotPassword);
     return (
-        <h2>Welcome to the nexus-Marketplace signup page.</h2>
+        <div className="flex items-center justify-between bg-blue-50/20 rounded-[2rem] p-[2rem] px-[8rem] gap-5 w-full min-h-screen">
+            <WelcomePage/>
+            <SignupForm setLogin={setLogin} setSignIn={setSignIn} setForgotPassword={setForgotPassword}/>
+        </div>
     )
 }
