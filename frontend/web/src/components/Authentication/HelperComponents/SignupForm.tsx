@@ -1,6 +1,6 @@
 import { Lock, Mail, User, CircleAlert } from "lucide-react";
 import { useState } from "react";
-//import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 interface SignupPageProps {
     setLogin?: (value: (((prevState: boolean) => boolean) | boolean)) => void,
@@ -25,19 +25,21 @@ export default function SignupForm({ setLogin, setSignIn, setForgotPassword }: S
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
-    //const navigate = useNavigate();
+    const navigate = useNavigate();
 
     //Errors
     const [isError, setIsError] = useState<boolean>(false); //error for incomplete form details
 
     const createAccount = (e: { preventDefault: () => void; }) : void => {
         e.preventDefault();
+        setIsLoading(true);
 
         const users: User[] = JSON.parse(localStorage.getItem("users") || "[]");
         const minLoadingTime = 3500; //minimum loading time in milliseconds (3.5s)
         const startTime = Date.now();
 
         if (!name || !email || !password || !course || year === 0) {
+            setIsLoading(false);
             setIsError(true);
 
             setTimeout(() => {
@@ -69,7 +71,10 @@ export default function SignupForm({ setLogin, setSignIn, setForgotPassword }: S
             setIsLoading(false);
         }, remainingTime > 0 ? remainingTime : 0);
 
-        //navigate(`/Home`);
+        setTimeout(()=> {
+            navigate(`/Home`);
+        }, remainingTime > 0 ? remainingTime + 20 : 0);
+
     }
 
     console.log(createAccount);

@@ -1,19 +1,10 @@
 import { GraduationCap, ShieldCheck } from "lucide-react"
+import Logo from "../../shared/Logo.tsx";
 
 export default function WelcomePage() {
     return (
         <div className="flex flex-col items-start justify-center w-full gap-5">
-            <div className="flex items-center justify-start rounded-[2rem] w-full gap-4">
-                <span>
-                    <GraduationCap />
-                </span>
-
-                <div>
-                    <h2>UCT MarketHub</h2>
-                    <p>Student Marketplace & Services</p>
-                </div>
-            </div>
-
+            <Logo/>
             <div className="flex flex-col items-start justify-center w-full gap-2">
                 <div className="flex items-center justify-start rounded-[2rem] w-full gap-4">
                 <span>
