@@ -8,13 +8,13 @@ interface LoginPageProps {
     setForgotPassword?: (value: (((prevState: boolean) => boolean) | boolean)) => void,
 }
 
-interface User {
+/*interface User {
     name: string;
     email: string;
     password: string;
     course: string;
     year: number;
-}
+}*/
 
 export default function Form({ setLogin, setSignIn }: LoginPageProps){
     const [email, setEmail] = useState<string>("");
@@ -30,8 +30,9 @@ export default function Form({ setLogin, setSignIn }: LoginPageProps){
     const login = (e: { preventDefault: () => void; }) : void => {
         e.preventDefault();
         setIsLoading(true);
+        setIs404Error(false);//to stop the typescript notes
 
-        const users: User[] = JSON.parse(localStorage.getItem("users") || "[]");
+        //const users: User[] = JSON.parse(localStorage.getItem("users") || "[]");
         const minLoadingTime = 3500; //minimum loading time in milliseconds (3.5s)
         const startTime = Date.now();
 
@@ -46,7 +47,7 @@ export default function Form({ setLogin, setSignIn }: LoginPageProps){
             return;
         }
 
-        if (!users.length) {
+        /*if (!users.length) {
             setIsLoading(false);
             setIs404Error(true);
 
@@ -74,7 +75,7 @@ export default function Form({ setLogin, setSignIn }: LoginPageProps){
             }, 2500);
 
             return;
-        }
+        }*/
 
         //mimic an api call
         const deltaTime = Date.now() - startTime;

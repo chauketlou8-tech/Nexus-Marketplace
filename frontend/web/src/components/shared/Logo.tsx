@@ -2,14 +2,14 @@ import { GraduationCap } from "lucide-react";
 
 export default function Logo() {
     return (
-        <div className="flex items-center justify-start rounded-[2rem] w-full gap-4">
-                <span>
-                    <GraduationCap />
+        <div className="flex items-center justify-start rounded-[2rem] p-4 gap-4">
+                <span className="flex justify-between items-center p-3 bg-purple-600 rounded-[8px]">
+                    <GraduationCap color="white"/>
                 </span>
 
             <div>
-                <h2>UCT MarketHub</h2>
-                <p>Student Marketplace & Services</p>
+                <h2 className="whitespace-nowrap">UCT MarketHub</h2>
+                <p className="whitespace-nowrap">Student Marketplace & Services</p>
             </div>
         </div>
     )
