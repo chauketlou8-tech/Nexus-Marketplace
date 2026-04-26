@@ -1,11 +1,10 @@
-package Frontend;
+package Main.java.client;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
-
-public class Main extends Application {
+public class MainApp extends Application {
     @Override
     public void start(Stage stage) {
         Label label = new Label("Hello, Welcome to the Nexus Marketplace desktop application!");
