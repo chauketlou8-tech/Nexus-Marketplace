@@ -8,7 +8,7 @@ export default function Logo() {
                 </span>
 
             <div>
-                <h2 className="whitespace-nowrap font-bold text-[25px]">UCT MarketHub</h2>
+                <h2 className="whitespace-nowrap font-bold text-[25px] text-black">UCT MarketHub</h2>
                 <p className="whitespace-nowrap text-[12px] text-[#666]">Student Marketplace & Services</p>
             </div>
         </div>

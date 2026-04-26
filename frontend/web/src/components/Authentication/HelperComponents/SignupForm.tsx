@@ -1,11 +1,14 @@
 import { Lock, Mail, User, CircleAlert } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import type { setUser } from "../../shared/Types/User.ts";
+import type { setBool } from "../../shared/Types/Types.ts";
 
 interface SignupPageProps {
-    setLogin?: (value: (((prevState: boolean) => boolean) | boolean)) => void,
-    setSignIn?: (value: (((prevState: boolean) => boolean) | boolean)) => void,
-    setForgotPassword?: (value: (((prevState: boolean) => boolean) | boolean)) => void
+    setLogin?: setBool,
+    setSignIn?: setBool,
+    setForgotPassword?: setBool,
+    setCurrUser?: setUser
 }
 
 interface User {
@@ -16,7 +19,7 @@ interface User {
     year: number;
 }
 
-export default function SignupForm({ setLogin, setSignIn, setForgotPassword }: SignupPageProps) {
+export default function SignupForm({ setLogin, setSignIn, setForgotPassword, setCurrUser }: SignupPageProps) {
     const [name, setName] = useState<string>("");
     const [email, setEmail] = useState<string>("");
     const [password, setPassword] = useState<string>("");
@@ -66,6 +69,8 @@ export default function SignupForm({ setLogin, setSignIn, setForgotPassword }: S
         //mimic an api call
         const deltaTime = Date.now() - startTime;
         const remainingTime = minLoadingTime - deltaTime;
+
+        setCurrUser?.(user);
 
         setTimeout(()=> {
             setIsLoading(false);

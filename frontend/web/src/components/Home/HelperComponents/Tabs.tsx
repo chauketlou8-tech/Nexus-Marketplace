@@ -1,14 +1,18 @@
 import { ShoppingBag, GraduationCap, MessageCircle, ChartColumn } from "lucide-react"
+import type { setString } from "../../shared/Types/Types.ts";
+import Profile from "./Profile.tsx";
+import type { User } from "../../shared/Types/User.ts";
 
 interface TabsProps {
     tab?: string
-    setTab?: (value: (((prev: string) => string) | string) ) => void
+    setTab?: setString
+    user: User
 }
 
-export default function Tabs({ tab, setTab }: TabsProps) {
+export default function Tabs({ tab, setTab, user }: TabsProps) {
     return (
         <div className="flex justify-between items-center w-full">
-            <div className="flex justify-start items-center w-[60%] p-4 gap-4">
+            <div className="flex justify-start items-center w-[60%] py-4 mr-4 gap-4">
                 <span onClick={() => { setTab?.("marketplace") }}
                     className={`flex justify-between items-center gap-2 px-2 py-1.75 rounded-[5px] ${tab === "marketplace" ? "bg-black" : "bg-white hover:bg-gray-100"}`}>
                     <ShoppingBag width="16px" height="16px" className={`${tab === "marketplace" ? "text-white" : "text-black"}`}/>
@@ -36,8 +40,8 @@ export default function Tabs({ tab, setTab }: TabsProps) {
 
             <span className="bg-[#ccc] w-[2px] h-[30px]"></span>
 
-            <div>
-                {/*Profile goes here*/}
+            <div className="flex justify-start items-center w-[30%] p-2 gap-4 bg-blue-50 rounded-[5px]">
+                <Profile user={user}/>
             </div>
         </div>
     )

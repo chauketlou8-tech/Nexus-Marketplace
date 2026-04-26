@@ -7,7 +7,8 @@ interface SearchProps {
 }
 
 export default function Marketplace({ search, setSearch } : SearchProps) {
-    console.log(search, setSearch);
+    void search
+    void setSearch
 
     return (
         <div className="flex flex-col justify-center items-center w-full p-4">

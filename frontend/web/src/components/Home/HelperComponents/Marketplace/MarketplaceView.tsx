@@ -7,8 +7,10 @@ export default function MarketplaceView() {
     const [course, setCourse] = useState<string>("All Courses");
     const [category, setCategory] = useState<string>("All Categories");
     const [sort, setSort] = useState<string>("recently listed");
-
-    console.log(course, sort, category);
+    
+    void course
+    void sort
+    void category
 
     return (
         <div className="flex flex-col justify-center items-center w-full p-4">

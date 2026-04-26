@@ -1,22 +1,18 @@
 import { Mail, Lock, CircleAlert } from "lucide-react"
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import type { setUser } from "../../shared/Types/User.ts";
+import type { setBool } from "../../shared/Types/Types.ts";
+import type { User } from "../../shared/Types/interface.ts";
 
 interface LoginPageProps {
-    setLogin?: (value: (((prevState: boolean) => boolean) | boolean)) => void,
-    setSignIn?: (value: (((prevState: boolean) => boolean) | boolean)) => void,
-    setForgotPassword?: (value: (((prevState: boolean) => boolean) | boolean)) => void,
+    setLogin?: setBool,
+    setSignIn?: setBool,
+    setForgotPassword?: setBool,
+    setCurrUser?: setUser
 }
 
-/*interface User {
-    name: string;
-    email: string;
-    password: string;
-    course: string;
-    year: number;
-}*/
-
-export default function Form({ setLogin, setSignIn }: LoginPageProps){
+export default function Form({ setLogin, setSignIn, setCurrUser }: LoginPageProps){
     const [email, setEmail] = useState<string>("");
     const [password, setPassword] = useState<string>("");
 
@@ -32,7 +28,7 @@ export default function Form({ setLogin, setSignIn }: LoginPageProps){
         setIsLoading(true);
         setIs404Error(false);//to stop the typescript notes
 
-        //const users: User[] = JSON.parse(localStorage.getItem("users") || "[]");
+        const users: User[] = JSON.parse(localStorage.getItem("users") || "[]");
         const minLoadingTime = 3500; //minimum loading time in milliseconds (3.5s)
         const startTime = Date.now();
 
@@ -47,7 +43,7 @@ export default function Form({ setLogin, setSignIn }: LoginPageProps){
             return;
         }
 
-        /*if (!users.length) {
+        if (!users.length) {
             setIsLoading(false);
             setIs404Error(true);
 
@@ -59,10 +55,12 @@ export default function Form({ setLogin, setSignIn }: LoginPageProps){
         }
 
         let foundUser : boolean = false;
+        let currUser = {};
 
         users.forEach((user: User) => {
             if (user.email === email) {
                 foundUser = true;
+                currUser = user;
             }
         });
 
@@ -75,11 +73,13 @@ export default function Form({ setLogin, setSignIn }: LoginPageProps){
             }, 2500);
 
             return;
-        }*/
+        }
 
         //mimic an api call
         const deltaTime = Date.now() - startTime;
         const remainingTime = minLoadingTime - deltaTime;
+
+        setCurrUser?.(currUser);
 
         setTimeout(()=> {
             setIsLoading(false);
@@ -132,7 +132,7 @@ export default function Form({ setLogin, setSignIn }: LoginPageProps){
 
             <div  className={`flex justify-start items-center bg-white w-[90%] shadow-lg p-4 rounded-[4px] gap-3 transition-all duration-300 overflow-hidden absolute ${is404Error ? "opacity-100 bottom-[50px] left-8 h-10" : "opacity-0 bottom-[20px] left-8 h-0 pointer-events-none"}`}>
                 <CircleAlert/>
-                <h2>Wrong email or password</h2>
+                <h2>Invalid email or password</h2>
             </div>
         </form>
     )

@@ -1,17 +1,19 @@
 import WelcomePage from "./HelperComponents/WelcomePage.tsx";
 import SignupForm from "./HelperComponents/SignupForm.tsx";
+import type { setUser } from "../shared/Types/User.ts";
 
 interface SignupPageProps {
     setLogin?: (value: (((prevState: boolean) => boolean) | boolean)) => void,
     setSignIn?: (value: (((prevState: boolean) => boolean) | boolean)) => void,
-    setForgotPassword?: (value: (((prevState: boolean) => boolean) | boolean)) => void
+    setForgotPassword?: (value: (((prevState: boolean) => boolean) | boolean)) => void,
+    setCurrUser?: setUser
 }
 
-export default function SignupPage({setLogin, setSignIn, setForgotPassword}: SignupPageProps) {
+export default function SignupPage({setLogin, setSignIn, setForgotPassword, setCurrUser}: SignupPageProps) {
     return (
         <div className="flex items-center justify-between bg-blue-50/20 rounded-[2rem] p-[2rem] px-[8rem] gap-5 w-full min-h-screen">
             <WelcomePage/>
-            <SignupForm setLogin={setLogin} setSignIn={setSignIn} setForgotPassword={setForgotPassword}/>
+            <SignupForm setLogin={setLogin} setSignIn={setSignIn} setForgotPassword={setForgotPassword} setCurrUser={setCurrUser}/>
         </div>
     )
 }
