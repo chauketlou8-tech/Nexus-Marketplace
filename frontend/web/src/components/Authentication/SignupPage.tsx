@@ -1,11 +1,12 @@
 import WelcomePage from "./HelperComponents/WelcomePage.tsx";
 import SignupForm from "./HelperComponents/SignupForm.tsx";
 import type { setUser } from "../shared/Types/User.ts";
+import type { setBool } from "../shared/Types/Types.ts";
 
 interface SignupPageProps {
-    setLogin?: (value: (((prevState: boolean) => boolean) | boolean)) => void,
-    setSignIn?: (value: (((prevState: boolean) => boolean) | boolean)) => void,
-    setForgotPassword?: (value: (((prevState: boolean) => boolean) | boolean)) => void,
+    setLogin?: setBool,
+    setSignIn?: setBool,
+    setForgotPassword?: setBool,
     setCurrUser?: setUser
 }
 

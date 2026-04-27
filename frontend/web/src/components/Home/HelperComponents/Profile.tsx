@@ -1,9 +1,11 @@
 import type { User as U } from "../../shared/Types/User.ts";
 import { ShieldCheck, User } from "lucide-react"
+import { useState } from "react";
 
 export default function Profile({ user }: { user: U }) {
 
-    const colors : string[] = ["blue", "green", "purple", "red", "orange", "yellow"]
+    const colors : string[] = ["blue", "green", "purple", "red", "orange", "yellow"];
+    const [color] = useState<string>(colors[Math.floor(Math.random() * colors.length)]);
 
     function formatInit() : string {
         if (user && 'name' in user) {
@@ -30,7 +32,7 @@ export default function Profile({ user }: { user: U }) {
     return (
         user && 'name' in user &&
         <div className="flex justify-between items-center w-full">
-            <span style={{ background: colors[Math.floor((Math.random() * colors.length))] }} className="flex justify-center items-center w-[20px] h-[20px] rounded-[50%] p-4.5 text-white font-[500]">
+            <span style={{ background: color }} className="flex justify-center items-center w-[20px] h-[20px] rounded-[50%] p-4.5 text-white font-[500]">
                 {formatInit()}
             </span>
 

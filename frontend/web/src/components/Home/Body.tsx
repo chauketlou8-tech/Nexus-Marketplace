@@ -2,14 +2,15 @@ import Marketplace from "./HelperComponents/Marketplace.tsx";
 import Services from "./HelperComponents/Services.tsx";
 import Messages from "./HelperComponents/Messages.tsx";
 import Dashboard from "./HelperComponents/DashBoard.tsx";
+import type {setString} from "../shared/Types/Types.ts";
 
 type PageKey = "marketplace" | "services" | "messages" | "dashboard";
 
 interface HeaderProps {
     tab: string;
     search?: string;
-    setTab?: (value: (((prev: string) => string) | string)) => void;
-    setSearch?: (value: (((prev: string) => string) | string)) => void;
+    setTab?: setString;
+    setSearch?: setString;
 }
 
 export default function Body({ tab, search, setSearch }: HeaderProps) {
