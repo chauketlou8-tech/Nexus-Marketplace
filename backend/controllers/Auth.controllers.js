@@ -1,4 +1,4 @@
-import User from "../Models/User"
+const User = require("../models/User");
 
 //login
 const loginUser = async (req, res) => {
