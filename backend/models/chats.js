@@ -10,7 +10,7 @@ const chatSchema = new mongoose.Schema({
     ],
     lastMessage: {
         type: String,
-        required: true,
+        default: null
     }
 }, { timestamps: true });
 
