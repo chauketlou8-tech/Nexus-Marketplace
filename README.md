@@ -127,7 +127,7 @@ mvn install
 
 ```bash id="0t7r4k"
 # Backend
-cd backend-node && npm run dev
+cd backend && npm run tables && npm run dev
 
 # Frontend
 cd frontend/web && npm run dev
