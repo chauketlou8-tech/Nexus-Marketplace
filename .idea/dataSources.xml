@@ -15,7 +15,7 @@
       <jdbc-url>mongodb+srv://cluster0.h6kymkq.mongodb.net/NexusMarketplace</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
-    <data-source source="LOCAL" name="Redis" uuid="41ef5c6d-9f3c-46cd-b6d8-59b898d7ee95">
+    <data-source source="LOCAL" name="Redis" uuid="0db03092-470a-444b-a599-15435b77d45f">
       <driver-ref>redis</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>jdbc.RedisDriver</jdbc-driver>

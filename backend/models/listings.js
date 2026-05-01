@@ -11,7 +11,7 @@ const listingSchema = new mongoose.Schema({
         required: true,
     },
     sellerId: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: Number,
         ref: 'User',
         required: true
     },

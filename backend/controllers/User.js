@@ -1,47 +1,55 @@
 const asyncHandler = require('../middleware/asyncHandler');
 const pool = require("../utils/postgreConnection");
+const redisClient = require("../utils/redisClient");
+const { CustomError } = require("../errors/CustomError");
 
+// get all users (admin only)
 const getUsers = asyncHandler(async (req, res) => {
-    try{
-        const results = await pool.query('select * from users');
-        console.log(results);
-        const users = results.rows;
+    const results = await pool.query('select * from users');
 
-        return res.status(200).json({
-            status: 'success',
-            users,
-        });
-    }
-    catch(err) {
-        return res.status(500).send({ error: err.message });
-    }
+    res.status(200).json({
+        status: 'success',
+        users: results.rows,
+    });
 });
 
-const getUser = asyncHandler(async (req, res) => {
-    try{
-        const id = req.params.id;
+// get single user
+const getUser = asyncHandler(async (req, res, next) => {
+    const { id } = req.params;
 
-        const results = await pool.query(`select * from users where id = $1`, [id]);
-        const user = results.rows[0];
+    const results = await pool.query(
+        `select * from users where id = $1`,
+        [id]
+    );
 
-        if (!user) {
-            return res.status(404).json({
-                status: 'error',
-                message: 'User not found.',
-            });
-        }
+    const user = results.rows[0];
 
-        return res.status(200).json({
-            status: 'success',
-            user,
-        });
+    if (!user) {
+        return next(new CustomError("User not found", 404));
     }
-    catch(err) {
-        return res.status(500).send({ error: err.message });
-    }
+
+    res.status(200).json({
+        status: 'success',
+        user,
+    });
+});
+
+// logout
+const logout = asyncHandler(async (req, res, next) => {
+    const client = await redisClient;
+
+    const userId = req.params.id;
+
+    await client.del(`online:${userId}`);
+
+    res.status(200).json({
+        success: true,
+        message: "Successfully logged out",
+    });
 });
 
 module.exports = {
     getUsers,
     getUser,
-}
+    logout,
+};

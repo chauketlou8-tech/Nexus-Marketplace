@@ -1,81 +1,86 @@
 const asyncHandler = require("../middleware/AsyncHandler");
 const pool = require("../utils/postgreConnection");
+const { CustomError } = require("../errors/CustomError");
 
+// get orders (only user’s)
 const getOrders = asyncHandler(async (req, res) => {
-    try{
-        const results = await pool.query("select * from Orders");
-        const orders = results.rows;
+    const results = await pool.query(
+        `select * from Orders where buyer_id = $1 or seller_id = $1`,
+        [req.user.id]
+    );
 
-        return res.json({
-            status: "success",
-            orders,
-        });
-    }
-    catch(err){
-        return res.status(500).json({
-            status: "error",
-            message: err.message,
-        });
-    }
+    res.json({
+        status: "success",
+        orders: results.rows,
+    });
 });
 
-const getOrder = asyncHandler(async (req, res) => {
-    const id = req.params.id;
+// get single order (protected)
+const getOrder = asyncHandler(async (req, res, next) => {
+    const { id } = req.params;
 
-    try{
-        const results = await pool.query(`select * from Orders where id = $1`, [id]);
-        const order = results.rows[0];
+    const results = await pool.query(
+        `select * from Orders
+         where id = $1 and (buyer_id = $2 or seller_id = $2)`,
+        [id, req.user.id]
+    );
 
-        if (!order) {
-            return res.status(404).send({
-                success: false,
-                message: "Order not found.",
-            });
-        }
+    const order = results.rows[0];
 
-        return res.json({
-            status: "success",
-            order,
-        });
+    if (!order) {
+        return next(new CustomError("Order not found", 404));
     }
-    catch(err){
-        return res.status(500).send({
-            success: false,
-            message: err.message,
-        });
-    }
+
+    res.json({
+        status: "success",
+        order,
+    });
 });
 
-const createOrder = asyncHandler(async (req, res) => {
-    const { buyer_id, seller_id, item_id, item_type, amount } = req.body;
+const getAdminOrders = asyncHandler(async (req, res, next) => {
+    const results = await pool.query(`select * from Orders`);
+    const orders = results.rows;
 
-    if (!buyer_id || !seller_id || !item_id || !item_type || !amount ) {
-        return res.status(400).send({
-            success: false,
-            message: "information missing",
-        });
+    res.status(200).json({
+        status: "success",
+        orders,
+    });
+});
+
+// create order
+const createOrder = asyncHandler(async (req, res, next) => {
+    const { seller_id, item_id, item_type, amount } = req.body;
+
+    const buyer_id = req.user.id;
+
+    if (!seller_id || !item_id || !item_type || !amount) {
+        return next(new CustomError("Missing information", 400));
     }
 
-    try{
-        const results = await pool.query(`insert into Orders(buyer_id, seller_id, item_id, item_type, amount) values ($1, $2, $3, $4, $5) returning *`, [buyer_id, seller_id, item_id, item_type, amount]);
-        const order = results.rows[0];
-
-        return res.status(201).json({
-            status: "order success",
-            order,
-        });
-
+    if (!["product", "service"].includes(item_type)) {
+        return next(new CustomError("Invalid item type", 400));
     }
-    catch(err){
-        return res.status(500).send({
-            success: false,
-            message: err.message,
-        });
+
+    if (buyer_id === seller_id) {
+        return next(new CustomError("Cannot buy your own item", 400));
     }
+
+    const results = await pool.query(
+        `insert into Orders(buyer_id, seller_id, item_id, item_type, amount)
+         values ($1, $2, $3, $4, $5)
+         returning *`,
+        [buyer_id, seller_id, item_id, item_type, amount]
+    );
+
+    res.status(201).json({
+        status: "success",
+        order: results.rows[0],
+    });
 });
 
 module.exports = {
     getOrders,
-    createOrder,
     getOrder,
-}
+    createOrder,
+    getAdminOrders
+};

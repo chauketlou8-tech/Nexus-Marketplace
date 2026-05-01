@@ -5,83 +5,73 @@ const redisClient = require("../utils/redisClient");
 const asyncHandler = require("../middleware/AsyncHandler");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const { CustomError } = require("../errors/CustomError");
 
 // login
-const loginUser = asyncHandler(async (req, res) => {
+const loginUser = asyncHandler(async (req, res, next) => {
     const { email, password } = req.body;
 
     const connection = await postgreConnection;
     const client = await redisClient;
 
     if (!email || !password) {
-        return res.status(400).send({
-            error: "Email or Password is required",
-        });
+        return next(new CustomError("Email and Password are required", 400));
     }
 
-    try{
-        const result = await connection.query(
-            `select * from Users where email = $1`,
-            [email]
-        );
+    const result = await connection.query(
+        `select id, name, email, role, year, is_verified, created_at, last_updated from Users where email = $1`,
+        [email]
+    );
 
-        const user = result.rows[0];
+    const user = result.rows[0];
 
-        if (!user) {
-            return res.status(404).send({
-                error: "User not found",
-            });
-        }
+    if (!user) {
+        return next(new CustomError("Invalid credentials", 401));
+    }
 
-        const isMatch = await bcrypt.compare(password, user.password_hash);
+    const isMatch = await bcrypt.compare(password, user.password_hash);
 
-        if (!isMatch) {
-            return res.status(401).send({
-                error: "Passwords do not match",
-            });
-        }
+    if (!isMatch) {
+        return next(new CustomError("Invalid credentials", 401));
+    }
 
-        const userId = user.id;
-        const secret = process.env.JWT_SECRET;
-        const refreshSecret = process.env.JWT_REFRESH_SECRET;
+    const userId = user.id;
+    const token = jwt.sign(
+        { id: userId, name: user.name, role: user.role },
+        process.env.JWT_SECRET,
+        { expiresIn: "1h" }
+    );
 
-        // FIX: correct field name (no isAdmin in DB)
-        const token = jwt.sign(
-            { id: userId, name: user.name, role: user.role },
-            secret,
-            { expiresIn: "1h" }
-        );
+    const refreshToken = jwt.sign(
+        { id: userId, name: user.name, role: user.role },
+        process.env.JWT_REFRESH_SECRET,
+        { expiresIn: "7d" }
+    );
 
-        const refreshToken = jwt.sign(
-            { id: userId, name: user.name, role: user.role },
-            refreshSecret,
-            { expiresIn: "7d" }
-        );
-
-        await connection.query(
-            `insert into Sessions (user_id, refresh_token, expires_at)
+    // Session logic
+    await connection.query(
+        `insert into Sessions (user_id, refresh_token, expires_at)
          values ($1, $2, $3)`,
-            [userId, refreshToken, new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)]
-        );
+        [userId, refreshToken, new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)]
+    );
 
-        await client.set(`online:${userId}`, "true", { EX: 3600 });
+    // Redis online status
+    await client.set(`online:${userId}`, "true", { EX: 3600 });
 
-        return res.status(200).send({
-            user,
-            token,
-            refreshToken
-        });
-    }
-    catch(err) {
-        return res.status(500).send({
-            error: err.message,
-        });
-    }
+    return res.status(200).send({
+        user,
+        token,
+        refreshToken
+    });
 });
 
 // create user
-const createUser = asyncHandler(async (req, res) => {
+const createUser = asyncHandler(async (req, res, next) => {
     const { name, email, password, year } = req.body;
+
+    if (!name || !email || !password) {
+        return next(new CustomError("Missing fields", 400));
+    }
 
     const adminEmails = ["chktlo003@myuct.ac.za"];
     const role = adminEmails.includes(email) ? "admin" : "student";
@@ -91,64 +81,52 @@ const createUser = asyncHandler(async (req, res) => {
 
     const hashedPassword = await hashPassword(password);
 
-    try{
-        const results = await connection.query(
-            `select * from Users where email = $1`,
-            [email]
-        );
+    const results = await connection.query(
+        `select * from Users where email = $1`,
+        [email]
+    );
 
-        const existsUser = results.rows[0];
+    const existsUser = results.rows[0];
 
-        if (existsUser) {
-            return res.status(401).send({
-                error: "email already in use",
-            });
-        }
+    if (existsUser) {
+        return next(new CustomError("Email already in use", 409));
+    }
 
-        const userResults = await connection.query(
-            `insert into Users(name, email, password_hash, role, year)
+    const userResults = await connection.query(
+        `insert into Users(name, email, password_hash, role, year)
          values ($1, $2, $3, $4, $5)
-         returning *`,
-            [name, email, hashedPassword, role, year]
-        );
+         returning id, name, email, role, year, is_verified, created_at, last_updated`,
+        [name, email, hashedPassword, role, year]
+    );
 
-        const user = userResults.rows[0];
-        const userId = user.id;
+    const user = userResults.rows[0];
+    const userId = user.id;
 
-        const secret = process.env.JWT_SECRET;
-        const refreshSecret = process.env.JWT_REFRESH_SECRET;
+    const token = jwt.sign(
+        { id: userId, name: user.name, role: user.role },
+        process.env.JWT_SECRET,
+        { expiresIn: "1h" }
+    );
 
-        const token = jwt.sign(
-            { id: userId, name: user.name, role: user.role },
-            secret,
-            { expiresIn: "1h" }
-        );
+    const refreshToken = jwt.sign(
+        { id: userId, name: user.name, role: user.role },
+        process.env.JWT_REFRESH_SECRET,
+        { expiresIn: "7d" }
+    );
 
-        const refreshToken = jwt.sign(
-            { id: userId, name: user.name, role: user.role },
-            refreshSecret,
-            { expiresIn: "7d" }
-        );
-
-        await connection.query(
-            `insert into Sessions (user_id, refresh_token, expires_at)
+    await connection.query(
+        `insert into Sessions (user_id, refresh_token, expires_at)
          values ($1, $2, $3)`,
-            [userId, refreshToken, new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)]
-        );
+        [userId, refreshToken, new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)]
+    );
 
-        await client.set(`online:${userId}`, "true", { EX: 3600 });
+    await client.set(`online:${userId}`, "true", { EX: 3600 });
 
-        return res.status(200).send({
-            user,
-            token,
-            refreshToken
-        });
-    }
-    catch(err) {
-        return res.status(500).send({
-            error: err.message,
-        });
-    }
+    return res.status(200).send({
+        user,
+        token,
+        refreshToken
+    });
 });
 
 // hash password
@@ -159,5 +137,5 @@ const hashPassword = async (password) => {
 
 module.exports = {
     loginUser,
-    createUser,
+    createUser
 };

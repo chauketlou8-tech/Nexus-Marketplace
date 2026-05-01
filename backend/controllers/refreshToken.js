@@ -1,48 +1,80 @@
 const postgreConnection = require("../utils/postgreConnection");
 const asyncHandler = require("../middleware/AsyncHandler");
 const jwt = require("jsonwebtoken");
+const { CustomError } = require("../errors/CustomError");
 
-const refreshUserToken = asyncHandler(async (req, res) => {
+const refreshUserToken = asyncHandler(async (req, res, next) => {
     const { refreshToken } = req.body;
     const connection = await postgreConnection;
 
     if (!refreshToken) {
-        return res.status(400).send({ error: 'Refresh token is required' });
+        return next(new CustomError("Refresh token is required", 400));
     }
 
-    try{
-        // check if refresh token exists in Sessions table
-        const result = await connection.query(
-            `select * from Sessions where refresh_token = $1`,
+    // verify token first
+    let decoded;
+    try {
+        decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+    } catch (err) {
+        return next(new CustomError("Invalid refresh token", 401));
+    }
+
+    // check session exists
+    const result = await connection.query(
+        `select * from Sessions where refresh_token = $1`,
+        [refreshToken]
+    );
+
+    const session = result.rows[0];
+
+    if (!session) {
+        return next(new CustomError("Refresh token not found", 401));
+    }
+
+    // check expiry
+    if (new Date(session.expires_at) < new Date()) {
+        await connection.query(
+            `delete from Sessions where refresh_token = $1`,
             [refreshToken]
         );
-        const session = result.rows[0];
-
-        if (!session) {
-            return res.status(401).send({ error: 'Invalid refresh token' });
-        }
-
-        // check if refresh token is expired
-        if (new Date(session.expires_at) < new Date()) {
-            await connection.query(`DELETE FROM Sessions WHERE refresh_token = $1`, [refreshToken]);
-            return res.status(401).send({ error: 'Refresh token expired' });
-        }
-
-        // verify the token
-        const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
-
-        // issue new access token
-        const token = jwt.sign(
-            { id: decoded.id, name: decoded.name, isAdmin: decoded.isAdmin },
-            process.env.JWT_SECRET,
-            { expiresIn: '1h' }
-        );
-
-        return res.status(200).send({ token });
+        return next(new CustomError("Refresh token expired", 401));
     }
-    catch(err) {
-        return res.status(500).send({ error: err.message });
-    }
+
+    // ROTATION: delete old session (prevents reuse)
+    await connection.query(
+        `delete from Sessions where refresh_token = $1`,
+        [refreshToken]
+    );
+
+    // issue new access token
+    const accessToken = jwt.sign(
+        { id: decoded.id, name: decoded.name, role: decoded.role },
+        process.env.JWT_SECRET,
+        { expiresIn: "1h" }
+    );
+
+    // issue new refresh token
+    const newRefreshToken = jwt.sign(
+        { id: decoded.id, name: decoded.name, role: decoded.role },
+        process.env.JWT_REFRESH_SECRET,
+        { expiresIn: "7d" }
+    );
+
+    // store new session
+    await connection.query(
+        `insert into Sessions (user_id, refresh_token, expires_at)
+         values ($1, $2, $3)`,
+        [
+            decoded.id,
+            newRefreshToken,
+            new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+        ]
+    );
+
+    return res.status(200).send({
+        token: accessToken,
+        refreshToken: newRefreshToken
+    });
 });
 
 module.exports = refreshUserToken;

@@ -18,7 +18,9 @@ async function start (){
         await connectPostgreDB(postgreUrl);
         await connectRedis(redisUrl);
 
-        console.log("MongoDB Connected!", "PostgreSQL Connected!", "Redis Connected!");
+        console.log("MongoDB Connected!");
+        console.log("PostgreSQL Connected!");
+        console.log("Redis Connected!");
 
         app.listen(port,() => {
             console.log(`Server listening on port ${ port }...`);
@@ -26,6 +28,7 @@ async function start (){
     }
     catch(err){
         console.log(err);
+        process.exit(1);
         return null;
     }
 }
