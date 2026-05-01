@@ -6,6 +6,7 @@ const asyncHandler = require("../middleware/AsyncHandler");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { CustomError } = require("../errors/CustomError");
+const hashPassword = require("../utils/hashPassword");
 
 // login
 const loginUser = asyncHandler(async (req, res, next) => {
@@ -15,7 +16,7 @@ const loginUser = asyncHandler(async (req, res, next) => {
     const client = await redisClient;
 
     if (!email || !password) {
-        return next(new CustomError("Email and Password are required", 400));
+        return next(new CustomError("Missing fields", 400));
     }
 
     const result = await connection.query(
@@ -26,10 +27,10 @@ const loginUser = asyncHandler(async (req, res, next) => {
     const user = result.rows[0];
 
     if (!user) {
-        return next(new CustomError("Invalid credentials", 401));
+        return next(new CustomError("Invalid credentials", 401)); //invalid email
     }
 
-    const isMatch = await bcrypt.compare(password, user.password_hash);
+    const isMatch = await bcrypt.compare(password, user.password_hash); //invalid password
 
     if (!isMatch) {
         return next(new CustomError("Invalid credentials", 401));
@@ -128,12 +129,6 @@ const createUser = asyncHandler(async (req, res, next) => {
         refreshToken
     });
 });
-
-// hash password
-const hashPassword = async (password) => {
-    const salt = await bcrypt.genSalt(15);
-    return await bcrypt.hash(password, salt);
-};
 
 module.exports = {
     loginUser,

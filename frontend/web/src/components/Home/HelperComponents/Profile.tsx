@@ -1,6 +1,8 @@
 import type { User as U } from "../../shared/Types/User.ts";
 import { ShieldCheck, User } from "lucide-react"
 import { useState } from "react";
+import navigate from "../../shared/Navigate.ts";
+import logoutUser from "../../../api/user/logoutUser.ts";
 
 export default function Profile({ user }: { user: U }) {
 
@@ -27,6 +29,11 @@ export default function Profile({ user }: { user: U }) {
         return "";
     }
 
+    const logout = async () => {
+        await logoutUser();
+        navigate("/");
+    }
+
 
 
     return (
@@ -50,7 +57,7 @@ export default function Profile({ user }: { user: U }) {
                 </div>
             </div>
 
-            <User className="text-[#333] w-[18px] h-[18px] font-[600] hover:cursor-pointer" />
+            <User className="text-[#333] w-[18px] h-[18px] font-[600] hover:cursor-pointer" onClick={logout} />
         </div>
     )
 }

@@ -1,9 +1,11 @@
 import { Mail, Lock, CircleAlert } from "lucide-react"
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+
 import type { setUser } from "../../shared/Types/User.ts";
 import type { setBool } from "../../shared/Types/Types.ts";
 import type { User } from "../../shared/Types/interface.ts";
+import loginUser from "../../../api/auth/loginUser.ts"
+import navigate from "../../shared/Navigate.ts";
 
 interface LoginPageProps {
     setLogin?: setBool,
@@ -17,18 +19,15 @@ export default function Form({ setLogin, setSignIn, setCurrUser }: LoginPageProp
     const [password, setPassword] = useState<string>("");
 
     const [isError, setIsError] = useState<boolean>(false);
-    const [is404Error, setIs404Error] = useState<boolean>(false);
+    const [is400Error, setIs400Error] = useState<boolean>(false);
+    const [is401Error, setIs401Error] = useState<boolean>(false);
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    const navigate = useNavigate();
 
-
-    const login = (e: { preventDefault: () => void; }) : void => {
+    const login = async (e: { preventDefault: () => void; }) => {
         e.preventDefault();
         setIsLoading(true);
-        setIs404Error(false);//to stop the typescript notes
 
-        const users: User[] = JSON.parse(localStorage.getItem("users") || "[]");
         const minLoadingTime = 3500; //minimum loading time in milliseconds (3.5s)
         const startTime = Date.now();
 
@@ -43,51 +42,52 @@ export default function Form({ setLogin, setSignIn, setCurrUser }: LoginPageProp
             return;
         }
 
-        if (!users.length) {
-            setIsLoading(false);
-            setIs404Error(true);
+        try{
+            const user: User = await loginUser(email, password);
 
-            setTimeout(() => {
-                setIs404Error(false);
-            }, 2500);
+            //mimic an api call
+            const deltaTime = Date.now() - startTime;
+            const remainingTime = minLoadingTime - deltaTime;
 
-            return;
+            setCurrUser?.(user);
+
+            setTimeout(()=> {
+                setIsLoading(false);
+            }, remainingTime > 0 ? remainingTime : 0);
+
+            setTimeout(()=> {
+                navigate(`/Home`);
+            }, remainingTime > 0 ? remainingTime + 20 : 0);
         }
+        catch(error){
+            setIsLoading(false);
 
-        let foundUser : boolean = false;
-        let currUser = {};
+            // @ts-ignore
+            const errorMessage = error.response?.data?.message;
 
-        users.forEach((user: User) => {
-            if (user.email === email) {
-                foundUser = true;
-                currUser = user;
+            if (errorMessage === "Missing fields"){
+                setIs400Error(true);
+
+                setTimeout(() => {
+                    setIs400Error(false);
+                }, 2500);
             }
-        });
+            else if (errorMessage === "Invalid credentials"){
+                setIs401Error(true);
 
-        if (!foundUser) {
-            setIsLoading(false);
-            setIs404Error(true);
+                setTimeout(() => {
+                    setIs401Error(false);
+                }, 2500);
+            }
 
-            setTimeout(() => {
-                setIs404Error(false);
-            }, 2500);
+            else {
+                setIsError(true);
 
-            return;
+                setTimeout(() => {
+                    setIsError(false);
+                }, 2500);
+            }
         }
-
-        //mimic an api call
-        const deltaTime = Date.now() - startTime;
-        const remainingTime = minLoadingTime - deltaTime;
-
-        setCurrUser?.(currUser);
-
-        setTimeout(()=> {
-            setIsLoading(false);
-        }, remainingTime > 0 ? remainingTime : 0);
-
-        setTimeout(()=> {
-            navigate(`/Home`);
-        }, remainingTime > 0 ? remainingTime + 20 : 0);
     }
 
     return (
@@ -127,12 +127,17 @@ export default function Form({ setLogin, setSignIn, setCurrUser }: LoginPageProp
 
             <div  className={`flex justify-start items-center bg-white w-[90%] shadow-lg p-4 rounded-[4px] gap-3 transition-all duration-300 overflow-hidden absolute ${isError ? "opacity-100 bottom-[50px] left-8 h-10" : "opacity-0 bottom-[20px] left-8 h-0 pointer-events-none"}`}>
                 <CircleAlert/>
-                <h2>Please fill in all the fields</h2>
+                <h2>There was an error</h2>
             </div>
 
-            <div  className={`flex justify-start items-center bg-white w-[90%] shadow-lg p-4 rounded-[4px] gap-3 transition-all duration-300 overflow-hidden absolute ${is404Error ? "opacity-100 bottom-[50px] left-8 h-10" : "opacity-0 bottom-[20px] left-8 h-0 pointer-events-none"}`}>
+            <div  className={`flex justify-start items-center bg-white w-[90%] shadow-lg p-4 rounded-[4px] gap-3 transition-all duration-300 overflow-hidden absolute ${is401Error ? "opacity-100 bottom-[50px] left-8 h-10" : "opacity-0 bottom-[20px] left-8 h-0 pointer-events-none"}`}>
                 <CircleAlert/>
                 <h2>Invalid email or password</h2>
+            </div>
+
+            <div  className={`flex justify-start items-center bg-white w-[90%] shadow-lg p-4 rounded-[4px] gap-3 transition-all duration-300 overflow-hidden absolute ${is400Error ? "opacity-100 bottom-[50px] left-8 h-10" : "opacity-0 bottom-[20px] left-8 h-0 pointer-events-none"}`}>
+                <CircleAlert/>
+                <h2>Please fill in all the fields</h2>
             </div>
         </form>
     )

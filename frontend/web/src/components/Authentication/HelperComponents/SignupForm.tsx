@@ -1,8 +1,9 @@
 import { Lock, Mail, User, CircleAlert } from "lucide-react";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import type { setUser } from "../../shared/Types/User.ts";
 import type { setBool } from "../../shared/Types/Types.ts";
+import signupUser from "../../../api/auth/signUser.ts";
+import navigate from "../../shared/Navigate.ts";
 
 interface SignupPageProps {
     setLogin?: setBool,
@@ -12,11 +13,14 @@ interface SignupPageProps {
 }
 
 interface User {
+    id: number;
     name: string;
     email: string;
-    password: string;
-    course: string;
+    role: string;
     year: number;
+    is_verified: boolean;
+    created_at: string;
+    last_updated: string;
 }
 
 export default function SignupForm({ setLogin, setSignIn, setForgotPassword, setCurrUser }: SignupPageProps) {
@@ -28,62 +32,80 @@ export default function SignupForm({ setLogin, setSignIn, setForgotPassword, set
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
-    const navigate = useNavigate();
-
     //Errors
-    const [isError, setIsError] = useState<boolean>(false); //error for incomplete form details
+    const [isError, setIsError] = useState<boolean>(false); //other errors
+    const [is409Error, setIs409Error] = useState<boolean>(false); //entering an email already in use
+    const [is400Error, setIs400Error] = useState<boolean>(false); //error for incomplete form details
 
-    const createAccount = (e: { preventDefault: () => void; }) : void => {
+    const createAccount = async (e: { preventDefault: () => void; }) => {
         e.preventDefault();
         setIsLoading(true);
 
-        const users: User[] = JSON.parse(localStorage.getItem("users") || "[]");
         const minLoadingTime = 3500; //minimum loading time in milliseconds (3.5s)
         const startTime = Date.now();
 
         if (!name || !email || !password || !course || year === 0) {
             setIsLoading(false);
-            setIsError(true);
+            setIs400Error(true);
 
             setTimeout(() => {
-                setIsError(false);
+                setIs400Error(false);
             }, 2500);
 
             return;
         }
 
-        setIsLoading(true);
+        try{
+            //create the user
+            const user : User = await signupUser(name, email, password, year);
 
-        const user : User = {
-            name,
-            email,
-            password,
-            course,
-            year,
+            const deltaTime = Date.now() - startTime;
+            const remainingTime = minLoadingTime - deltaTime;
+
+            setCurrUser?.(user);
+            console.log("User created");
+
+            setTimeout(()=> {
+                setIsLoading(false);
+            }, remainingTime > 0 ? remainingTime : 0);
+
+            setTimeout(()=> {
+                navigate(`/Home`);
+            }, remainingTime > 0 ? remainingTime + 20 : 0);
         }
-        //This is where the account creation goes.
-        //mimic by saving to localstorage.
-        users.push(user);
-        localStorage.setItem("users", JSON.stringify(users));
-
-        //mimic an api call
-        const deltaTime = Date.now() - startTime;
-        const remainingTime = minLoadingTime - deltaTime;
-
-        setCurrUser?.(user);
-
-        setTimeout(()=> {
+        catch(error) {
             setIsLoading(false);
-        }, remainingTime > 0 ? remainingTime : 0);
 
-        setTimeout(()=> {
-            navigate(`/Home`);
-        }, remainingTime > 0 ? remainingTime + 20 : 0);
+            // @ts-ignore
+            const errorMessage = error.response?.data?.message
+
+            if (errorMessage === "Email already in use") {
+                setIs409Error(true);
+
+                setTimeout(() => {
+                    setIs409Error(false);
+                }, 2500);
+            }
+            else if (errorMessage === "Missing fields") {
+                setIs400Error(true);
+
+                setTimeout(() => {
+                    setIs400Error(false);
+                }, 2500);
+            }
+
+            else{
+                setIsError(true);
+
+                setTimeout(() => {
+                    setIsError(false);
+                }, 2500);
+            }
+        }
 
     }
 
-    console.log(createAccount);
-    console.log(setLogin, setSignIn, setForgotPassword, name, setName, email, password, course, setCourse, year, setYear, setEmail, setPassword);
+    void setForgotPassword;
     return (
         <form noValidate={true} className="flex flex-col items-start justify-center bg-white rounded-[10px] p-[2rem] shadow-lg w-full max-w-[800px] gap-4 relative">
             <div className="flex flex-col">
@@ -143,9 +165,19 @@ export default function SignupForm({ setLogin, setSignIn, setForgotPassword, set
             }}
             >Sign In</a></p>
 
-            <div  className={`flex justify-start items-center bg-white w-[90%] shadow-lg p-4 rounded-[4px] gap-3 transition-all duration-300 overflow-hidden absolute ${isError ? "opacity-100 bottom-[50px] left-8 h-10" : "opacity-0 bottom-[20px] left-8 h-0 pointer-events-none"}`}>
+            <div  className={`flex justify-start items-center bg-white w-[90%] shadow-lg p-4 rounded-[4px] gap-3 transition-all duration-300 overflow-hidden absolute ${is400Error ? "opacity-100 bottom-[50px] left-8 h-10" : "opacity-0 bottom-[20px] left-8 h-0 pointer-events-none"}`}>
                 <CircleAlert/>
                 <h2>Please fill in all the fields</h2>
+            </div>
+
+            <div  className={`flex justify-start items-center bg-white w-[90%] shadow-lg p-4 rounded-[4px] gap-3 transition-all duration-300 overflow-hidden absolute ${is409Error ? "opacity-100 bottom-[50px] left-8 h-10" : "opacity-0 bottom-[20px] left-8 h-0 pointer-events-none"}`}>
+                <CircleAlert/>
+                <h2>Email already in use</h2>
+            </div>
+
+            <div  className={`flex justify-start items-center bg-white w-[90%] shadow-lg p-4 rounded-[4px] gap-3 transition-all duration-300 overflow-hidden absolute ${isError ? "opacity-100 bottom-[50px] left-8 h-10" : "opacity-0 bottom-[20px] left-8 h-0 pointer-events-none"}`}>
+                <CircleAlert/>
+                <h2>There was an error</h2>
             </div>
         </form>
     )
