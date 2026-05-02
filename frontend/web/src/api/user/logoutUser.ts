@@ -1,9 +1,9 @@
 import axios from 'axios';
 
-const logout = async () => {
-    const user = await axios.post("/api/users/logout", {});
+const logout = async (id:number) => {
+    const { data } = await axios.post(`/api/users/logout/${id}`);
 
-    return user;
+    return data.user;
 }
 
 export default logout;

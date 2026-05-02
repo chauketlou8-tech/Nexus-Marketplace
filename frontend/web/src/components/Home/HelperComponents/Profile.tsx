@@ -1,13 +1,16 @@
 import type { User as U } from "../../shared/Types/User.ts";
 import { ShieldCheck, User } from "lucide-react"
 import { useState } from "react";
-import navigate from "../../shared/Navigate.ts";
+import {useNavigate} from "react-router-dom";
 import logoutUser from "../../../api/user/logoutUser.ts";
+import UserProfile from "./UserProfile.tsx";
 
 export default function Profile({ user }: { user: U }) {
 
     const colors : string[] = ["blue", "green", "purple", "red", "orange", "yellow"];
     const [color] = useState<string>(colors[Math.floor(Math.random() * colors.length)]);
+
+    const navigate = useNavigate();
 
     function formatInit() : string {
         if (user && 'name' in user) {
@@ -29,8 +32,10 @@ export default function Profile({ user }: { user: U }) {
         return "";
     }
 
-    const logout = async () => {
-        await logoutUser();
+    const logout = async (e: { stopPropagation: () => void; }) => {
+        e.stopPropagation();
+        //@ts-ignore
+        await logoutUser(user?.id);
         navigate("/");
     }
 
@@ -58,6 +63,7 @@ export default function Profile({ user }: { user: U }) {
             </div>
 
             <User className="text-[#333] w-[18px] h-[18px] font-[600] hover:cursor-pointer" onClick={logout} />
+            <UserProfile/>
         </div>
     )
 }

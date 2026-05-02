@@ -3,7 +3,7 @@ import { useState } from "react";
 import type { setUser } from "../../shared/Types/User.ts";
 import type { setBool } from "../../shared/Types/Types.ts";
 import signupUser from "../../../api/auth/signUser.ts";
-import navigate from "../../shared/Navigate.ts";
+import { useNavigate } from "react-router-dom";
 
 interface SignupPageProps {
     setLogin?: setBool,
@@ -36,6 +36,8 @@ export default function SignupForm({ setLogin, setSignIn, setForgotPassword, set
     const [isError, setIsError] = useState<boolean>(false); //other errors
     const [is409Error, setIs409Error] = useState<boolean>(false); //entering an email already in use
     const [is400Error, setIs400Error] = useState<boolean>(false); //error for incomplete form details
+
+    const navigate = useNavigate();
 
     const createAccount = async (e: { preventDefault: () => void; }) => {
         e.preventDefault();

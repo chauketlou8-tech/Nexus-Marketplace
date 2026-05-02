@@ -5,7 +5,7 @@ import type { setUser } from "../../shared/Types/User.ts";
 import type { setBool } from "../../shared/Types/Types.ts";
 import type { User } from "../../shared/Types/interface.ts";
 import loginUser from "../../../api/auth/loginUser.ts"
-import navigate from "../../shared/Navigate.ts";
+import { useNavigate } from "react-router-dom";
 
 interface LoginPageProps {
     setLogin?: setBool,
@@ -23,6 +23,8 @@ export default function Form({ setLogin, setSignIn, setCurrUser }: LoginPageProp
     const [is401Error, setIs401Error] = useState<boolean>(false);
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
+
+    const navigate = useNavigate();
 
     const login = async (e: { preventDefault: () => void; }) => {
         e.preventDefault();
@@ -64,6 +66,7 @@ export default function Form({ setLogin, setSignIn, setCurrUser }: LoginPageProp
 
             // @ts-ignore
             const errorMessage = error.response?.data?.message;
+            console.log(errorMessage);
 
             if (errorMessage === "Missing fields"){
                 setIs400Error(true);

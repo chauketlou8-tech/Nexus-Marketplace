@@ -1,9 +1,12 @@
 export type User =  {
+    id: number;
     name: string;
     email: string;
-    password: string;
-    course: string;
+    role: string;
     year: number;
+    is_verified: boolean;
+    created_at?: string;
+    last_updated?: string;
 } | {} | null;
 
 export type setUser = (value: User | ((prevState: User) => User)) => void;

@@ -8,6 +8,6 @@ const { getUsers, getUser, logout } = require('../controllers/User');
 
 router.get("/", authMiddleware, adminMiddleware, getUsers);
 router.get("/:id", authMiddleware, getUser);
-router.post("/logout/:id", authMiddleware, logout);
+router.post("/logout/:id", logout);
 
 module.exports = router;

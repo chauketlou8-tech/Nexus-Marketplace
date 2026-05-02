@@ -20,7 +20,7 @@ const loginUser = asyncHandler(async (req, res, next) => {
     }
 
     const result = await connection.query(
-        `select id, name, email, role, year, is_verified, created_at, last_updated from Users where email = $1`,
+        `select * from Users where email = $1`,
         [email]
     );
 
@@ -58,6 +58,8 @@ const loginUser = asyncHandler(async (req, res, next) => {
 
     // Redis online status
     await client.set(`online:${userId}`, "true", { EX: 3600 });
+
+    delete user.password_hash;
 
     return res.status(200).send({
         user,

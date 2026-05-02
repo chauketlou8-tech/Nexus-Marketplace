@@ -1,7 +1,10 @@
 export interface User {
-    name: string;
-    email: string;
-    password: string;
-    course: string;
-    year: number;
+    id?: number;
+    name?: string;
+    email?: string;
+    role?: string;
+    year?: number;
+    is_verified?: boolean;
+    created_at?: string;
+    last_updated?: string;
 }
