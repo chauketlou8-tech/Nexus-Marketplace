@@ -35,15 +35,15 @@ const getCourse = asyncHandler(async (req, res, next) => {
 
 // create course
 const createCourse = asyncHandler(async (req, res, next) => {
-    const { code, name } = req.body;
+    const { code, name, faculty, year } = req.body;
 
-    if (!code || !name) {
+    if (!code || !name || !faculty || !year) {
         return next(new CustomError("Missing fields", 400));
     }
 
     const result = await pool.query(
-        `insert into Courses(code, name) values ($1, $2) returning *`,
-        [code.toUpperCase(), name]
+        `insert into Courses(code, name, faculty, year) values ($1, $2, $3, $4) returning *`,
+        [code.toUpperCase(), name, faculty, year],
     );
 
     res.status(201).json({

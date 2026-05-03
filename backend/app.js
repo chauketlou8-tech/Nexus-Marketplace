@@ -16,6 +16,7 @@ const refreshRoutes = require('./routes/refreshToken');
 const coursesRoutes = require("./routes/Courses.routes");
 const reviewsRoutes = require("./routes/Reviews.routes");
 const summaryRoutes = require("./routes/ReviewsSummary.routes");
+const categoryRoutes = require("./routes/Categories.routes");
 
 //middleware
 app.use(express.json());
@@ -34,6 +35,7 @@ app.use('/api/refreshToken', refreshRoutes);
 app.use('/api/courses', coursesRoutes);
 app.use('/api/reviews', reviewsRoutes);
 app.use('/api/summary', summaryRoutes);
+app.use('/api/category', categoryRoutes);
 
 //error handler
 app.use(errorHandler);

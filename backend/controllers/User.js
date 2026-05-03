@@ -18,13 +18,15 @@ const getUser = asyncHandler(async (req, res, next) => {
     const { id } = req.params;
 
     const results = await pool.query(
-        `select * from users where id = $1`,
+        `select id, name, email, role, year, is_verified, created_at, last_updated from users where id = $1`,
         [id]
     );
 
     const user = results.rows[0];
 
     if (!user) {
+        console.log(id, typeof id);
+        console.log("user not found Here");
         return next(new CustomError("User not found", 404));
     }
 
@@ -41,6 +43,7 @@ const logout = asyncHandler(async (req, res) => {
     const userId = req.params.id;
 
     await client.del(`online:${userId}`);
+    await pool.query(`delete from Sessions where user_id = ${userId}`);
 
     res.status(200).json({
         success: true,

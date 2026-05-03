@@ -30,15 +30,13 @@ const servicesSchema = new mongoose.Schema({
         required: true
     },
     availability: {
-        type: {
-            days: {
-                type: [String],
-                required: true,
-            },
-            time: {
-                type: String,
-                required: true,
-            }
+        days: {
+            type: [String],
+            required: true,
+        },
+        time: {
+            type: String,
+            required: true,
         }
     },
     deliveryMode: {
@@ -48,11 +46,17 @@ const servicesSchema = new mongoose.Schema({
     rating: {
         type: Number,
         default: 0,
+        min: 0,
+        max: 5,
     },
     images: {
         type: [String],
         required: true,
-    }
+    },
+    courseIds: [{
+        type: Number,
+        ref: 'Course'
+    }]
 }, { timestamps: true });
 
 const servicesModel = mongoose.model('Service', servicesSchema);

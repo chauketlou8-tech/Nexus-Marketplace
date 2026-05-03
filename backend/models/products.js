@@ -39,7 +39,11 @@ const productSchema = new mongoose.Schema({
         type: String,
         enum: ['active', 'sold', 'inactive'],
         default: 'active',
-    }
+    },
+    courseIds: [{
+        type: Number,
+        ref: 'Course'
+    }]
 }, { timestamps: true });
 
 const productModel = mongoose.model('Product', productSchema);

@@ -1,12 +1,22 @@
 import { Cog } from "lucide-react"
+import type { setString } from "../../shared/Types/Types.ts";
+import type { Service, Category } from "../../shared/Types/interface.ts";
 
 interface SearchProps {
     search?: string;
-    setSearch?: (value: (((prev: string) => string) | string)) => void;
+    setSearch?: setString;
+    services?: Service[];
+    categories?: Category[];
+    formatInit?: (name: string) => string;
 }
 
-export default function Services({ search, setSearch }: SearchProps) {
-    console.log(search, setSearch);
+export default function Services({ search, setSearch, services, categories }: SearchProps) {
+    
+    void search
+    void setSearch
+    void services
+    void categories
+    
     return (
         <div className="flex flex-col justify-center items-center w-full h-full p-4">
             <div className="flex justify-between items-center w-full p-4">
@@ -30,10 +40,22 @@ export default function Services({ search, setSearch }: SearchProps) {
                 </div>
             </div>
 
-            <div className="flex items-center justify-center text-gray-500 gap-2 w-full mt-30">
-                <Cog className="w-10 h-10 text-gray-400" />
-                <p className="text-sm">No services available</p>
-            </div>
+            {
+                services &&
+                (
+                    services.length > 0 ? 
+                        <div>
+
+                        </div> 
+                        
+                        :
+                        
+                        <div className="flex items-center justify-center text-gray-500 gap-2 w-full mt-30">
+                            <Cog className="w-10 h-10 text-gray-400" />
+                            <p className="text-sm">No services available</p>
+                        </div>
+                )
+            }
         </div>
     )
 }

@@ -5,32 +5,13 @@ import {useNavigate} from "react-router-dom";
 import logoutUser from "../../../api/user/logoutUser.ts";
 import UserProfile from "./UserProfile.tsx";
 
-export default function Profile({ user }: { user: U }) {
+export default function Profile({ user, formatInit }: { user: U, formatInit: (name: string) => string }) {
 
+    const [isShowProfile, setShowProfile] = useState(false);
     const colors : string[] = ["blue", "green", "purple", "red", "orange", "yellow"];
     const [color] = useState<string>(colors[Math.floor(Math.random() * colors.length)]);
 
     const navigate = useNavigate();
-
-    function formatInit() : string {
-        if (user && 'name' in user) {
-            const name = user.name;
-            const splitName : string[] = name.split(' ');
-            let initials : string = "";
-
-            if (splitName.length == 1) {
-                initials += splitName[0].charAt(0).toUpperCase() + splitName[0].charAt(1).toUpperCase();
-            }
-
-            else if (splitName.length >= 2) {
-                initials += splitName[0].charAt(0).toUpperCase() + splitName[splitName.length - 1].charAt(0).toUpperCase();
-            }
-
-            return initials;
-        }
-
-        return "";
-    }
 
     const logout = async (e: { stopPropagation: () => void; }) => {
         e.stopPropagation();
@@ -39,13 +20,11 @@ export default function Profile({ user }: { user: U }) {
         navigate("/");
     }
 
-
-
     return (
         user && 'name' in user &&
-        <div className="flex justify-between items-center w-full">
+        <div className="flex justify-between items-center w-full" onClick={() => setShowProfile?.(true)}>
             <span style={{ background: color }} className="flex justify-center items-center w-[20px] h-[20px] rounded-[50%] p-4.5 text-white font-[500]">
-                {formatInit()}
+                {formatInit(user.name)}
             </span>
 
             <div>
@@ -63,7 +42,7 @@ export default function Profile({ user }: { user: U }) {
             </div>
 
             <User className="text-[#333] w-[18px] h-[18px] font-[600] hover:cursor-pointer" onClick={logout} />
-            <UserProfile/>
+            { isShowProfile && <UserProfile user={user} setShowProfile={setShowProfile}/> }
         </div>
     )
 }

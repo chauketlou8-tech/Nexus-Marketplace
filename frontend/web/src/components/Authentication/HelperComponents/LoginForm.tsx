@@ -26,6 +26,13 @@ export default function Form({ setLogin, setSignIn, setCurrUser }: LoginPageProp
 
     const navigate = useNavigate();
 
+    const gotoSignUp = () => {
+        setLogin?.(false);
+        setSignIn?.(true);
+        setEmail("");
+        setPassword("");
+    }
+
     const login = async (e: { preventDefault: () => void; }) => {
         e.preventDefault();
         setIsLoading(true);
@@ -55,6 +62,8 @@ export default function Form({ setLogin, setSignIn, setCurrUser }: LoginPageProp
 
             setTimeout(()=> {
                 setIsLoading(false);
+                setEmail("");
+                setPassword("");
             }, remainingTime > 0 ? remainingTime : 0);
 
             setTimeout(()=> {
@@ -122,11 +131,7 @@ export default function Form({ setLogin, setSignIn, setCurrUser }: LoginPageProp
             <button onClick={login} className="flex justify-center items-center w-full bg-black text-white rounded-[5px] p-[8px] mt-2 hover:bg-black/80 transition-[0.25s]">
                 {isLoading ? (<h2 className="animate-pulse">Logging in...</h2>) : (<h2>Sign in</h2>)}
             </button>
-            <p className="flex justify-center items-center w-full text-[14px] gap">Don't have an account? <a href="#" className="text-blue-500 font-[600] text-[16px] ml-1" onClick={() => {
-                setLogin?.(false);
-                setSignIn?.(true);
-            }}
-            >Sign Up</a></p>
+            <p className="flex justify-center items-center w-full text-[14px] gap">Don't have an account? <a href="#" className="text-blue-500 font-[600] text-[16px] ml-1" onClick={gotoSignUp}>Sign Up</a></p>
 
             <div  className={`flex justify-start items-center bg-white w-[90%] shadow-lg p-4 rounded-[4px] gap-3 transition-all duration-300 overflow-hidden absolute ${isError ? "opacity-100 bottom-[50px] left-8 h-10" : "opacity-0 bottom-[20px] left-8 h-0 pointer-events-none"}`}>
                 <CircleAlert/>
