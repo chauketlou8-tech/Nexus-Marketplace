@@ -2,11 +2,13 @@ import Header from "../components/Home/Header.tsx";
 import Body from "../components/Home/Body.tsx";
 import { useState, useEffect } from "react";
 import type { User } from "../components/shared/Types/User.ts"
-import type { Product, Category, Course, Service } from "../components/shared/Types/interface.ts";
+import type { Product, Category, Course, Service, Chat, Listing } from "../components/shared/Types/interface.ts";
 import getProducts from "../api/products/getProducts.ts";
 import getCategories from "../api/categories/getCategories.ts";
 import getCourses from "../api/courses/getCourses.ts";
 import getServices from "../api/services/getServices.ts";
+import getChats from "../api/chats/getChats.ts";
+import getListings from "../api/listings/getListings.ts";
 
 export default function Home({ user }: { user : User }) {
 
@@ -17,12 +19,14 @@ export default function Home({ user }: { user : User }) {
     const [categories, setCategories] = useState<Category[]>([]);
     const [courses, setCourses] = useState<Course[]>([]);
     const [services, setServices] = useState<Service[]>([]);
+    const [chats, setChats] = useState<Chat[]>([]);
+    const [listings, setListings] = useState<Listing[]>([]);
 
     useEffect(() => {
         const fetchProducts = async () => {
             try{
-                const p: Product[] = await getProducts();
-                setProducts(p);
+                const allProducts: Product[] = await getProducts();
+                setProducts(allProducts);
             }
             catch (e) {
                 console.log(e);
@@ -31,8 +35,8 @@ export default function Home({ user }: { user : User }) {
 
         const fetchCategories = async () => {
             try{
-                const cs: Category[] = await getCategories();
-                setCategories(cs);
+                const allCategories: Category[] = await getCategories();
+                setCategories(allCategories);
             }
             catch (e) {
                 console.log(e);
@@ -41,8 +45,8 @@ export default function Home({ user }: { user : User }) {
 
         const fetchCourses = async () => {
             try{
-                const cs = await getCourses();
-                setCourses(cs);
+                const allCourses = await getCourses();
+                setCourses(allCourses);
             }
             catch (e) {
                 console.log(e)
@@ -53,6 +57,27 @@ export default function Home({ user }: { user : User }) {
             try{
                 const allServices: Service[] = await getServices();
                 setServices(allServices);
+                console.log(allServices);
+            }
+            catch (e) {
+                console.log(e)
+            }
+        }
+
+        const fetchChats = async () => {
+            try{
+                const allChats: Chat[] = await getChats();
+                setChats(allChats);
+            }
+            catch (e) {
+                console.log(e)
+            }
+        }
+
+        const fetchListings = async () => {
+            try{
+                const allListings: Listing[] = await getListings();
+                setListings(allListings);
             }
             catch (e) {
                 console.log(e)
@@ -63,6 +88,8 @@ export default function Home({ user }: { user : User }) {
         void fetchCategories();
         void fetchCourses();
         void fetchServices();
+        void fetchChats();
+        void fetchListings()
     }, []);
 
     function formatInit(name: string) : string {
@@ -93,6 +120,8 @@ export default function Home({ user }: { user : User }) {
                   categories={categories}
                   courses={courses}
                   services={services}
+                  chats={chats}
+                  listings={listings}
             />
         </div>
     );

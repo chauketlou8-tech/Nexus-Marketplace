@@ -9,7 +9,6 @@ const getUser = async (id: number) => {
             Authorization: `Bearer ${token}`,
         }
     });
-    console.log(data);
     return data.user;
 }
 

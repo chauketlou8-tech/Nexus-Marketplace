@@ -42,19 +42,33 @@ export interface Course {
 export interface Service {
     _id?: string;
     title?: string;
+    serviceType?: string;
     description?: string;
+    providerId?: number;
+    categoryId?: string;
+    courses?: string[];
+    skills?: string[];
+    availability?: string;
     pricing?: {
         amount?: number;
         unit?: string;
-    },
-    categoryId: string,
-    providerId?: string,
-    availability?: {
-        days?: string[];
-        time?: string;
     }
-    deliveryMode?: string[];
-    rating?: number;
     images?: string[];
-    courseIds?: string[];
+}
+
+export interface Chat {
+    _id?: string;
+    participants?: string[];
+    lastMessage?: string;
+}
+
+export interface Listing {
+    _id?: string;
+    createdAt?: Date;
+    itemId?: string;
+    price?: number;
+    sellerId?: number;
+    status?: string;
+    updatedAt?: Date;
+    itemType?: string;
 }

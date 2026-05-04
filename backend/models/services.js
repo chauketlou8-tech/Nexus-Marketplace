@@ -5,58 +5,49 @@ const servicesSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    serviceType: {
+        type: String,
+        required: true,
+    },
     description: {
+        type: String,
+        required: true,
+    },
+    providerId: {
+        type: Number,
+        required: true,
+        ref: "User",
+    },
+    categoryId: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+    },
+    courses: {
+        type: [String],
+        required: true,
+    },
+    skills: {
+        type: [String],
+        required: true,
+    },
+    availability: {
         type: String,
         required: true,
     },
     pricing: {
         amount: {
             type: Number,
-            required: true
+            required: true,
         },
         unit: {
             type: String,
-            required: true
-        }
-    },
-    categoryId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Category',
-        required: true,
-    },
-    providerId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true
-    },
-    availability: {
-        days: {
-            type: [String],
-            required: true,
-        },
-        time: {
-            type: String,
             required: true,
         }
-    },
-    deliveryMode: {
-        type: [String],
-        required: true,
-    },
-    rating: {
-        type: Number,
-        default: 0,
-        min: 0,
-        max: 5,
     },
     images: {
         type: [String],
         required: true,
-    },
-    courseIds: [{
-        type: Number,
-        ref: 'Course'
-    }]
+    }
 }, { timestamps: true });
 
 const servicesModel = mongoose.model('Service', servicesSchema);

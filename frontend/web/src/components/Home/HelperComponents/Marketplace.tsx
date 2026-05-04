@@ -1,6 +1,7 @@
 import RecommendationsPage from "./Marketplace/Recommendations.tsx";
 import MarketplaceView from "./Marketplace/MarketplaceView.tsx";
-import type { Category, Product, Course } from "../../shared/Types/interface.ts";
+import type { Category, Product, Course, Listing } from "../../shared/Types/interface.ts";
+import type { setString } from "../../shared/Types/Types.ts";
 
 interface SearchProps {
     search?: string;
@@ -9,9 +10,11 @@ interface SearchProps {
     formatInit: (name: string) => string;
     categories?: Category[];
     courses?: Course[];
+    setTab?: setString
+    listings?: Listing[];
 }
 
-export default function Marketplace({ search, setSearch, products, formatInit, categories, courses } : SearchProps) {
+export default function Marketplace({ search, setSearch, products, formatInit, categories, courses, setTab, listings } : SearchProps) {
     void search
     void setSearch
 
@@ -22,6 +25,8 @@ export default function Marketplace({ search, setSearch, products, formatInit, c
                              formatInit={formatInit}
                              categories={categories}
                              courses={courses}
+                             setTab={setTab}
+                             listings={listings}
             />
         </div>
     )

@@ -2,7 +2,7 @@ const asyncHandler = require("../middleware/AsyncHandler");
 const Chats = require("../models/Chats");
 const { CustomError } = require("../errors/CustomError");
 
-const getChats = asyncHandler(async (req, res, next) => {
+const getChats = asyncHandler(async (req, res) => {
     const chats = await Chats.find({
         participants: req.user.id
     });

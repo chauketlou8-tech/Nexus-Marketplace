@@ -16,7 +16,7 @@ const getService = asyncHandler(async (req, res, next) => {
         data: service,
     });
 });
-
+//get all services
 const getServices = asyncHandler(async (req, res) => {
     const services = await Services.find({});
 
@@ -29,26 +29,29 @@ const getServices = asyncHandler(async (req, res) => {
 const createService = asyncHandler(async (req, res, next) => {
     const {
         title,
+        serviceType,
         description,
-        pricing,
         providerId,
         categoryId,
+        courses,
+        skills,
         availability,
+        pricing,
         images,
-        deliveryMode,
-        status
     } = req.body;
 
     if (
         !title ||
+        !serviceType ||
         !description ||
-        !pricing?.amount ||
         !providerId ||
         !categoryId ||
+        !courses?.length ||
+        !skills?.length ||
         !availability ||
-        !images?.length ||
-        !deliveryMode?.length ||
-        !status
+        !pricing?.amount ||
+        !pricing?.unit ||
+        !images?.length
     ) {
         return next(new CustomError("Missing required fields", 400));
     }
@@ -60,14 +63,15 @@ const createService = asyncHandler(async (req, res, next) => {
 
     const service = await Services.create({
         title,
+        serviceType,
         description,
-        pricing,
         providerId,
         categoryId,
+        courses,
+        skills,
         availability,
+        pricing,
         images,
-        deliveryMode,
-        status,
     });
 
     await Listing.create({

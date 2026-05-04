@@ -3,7 +3,7 @@ import Services from "./HelperComponents/Services.tsx";
 import Messages from "./HelperComponents/Messages.tsx";
 import Dashboard from "./HelperComponents/DashBoard.tsx";
 import type { setString } from "../shared/Types/Types.ts";
-import type { Product, Category, Course, Service } from "../shared/Types/interface.ts";
+import type { Product, Category, Course, Service, Chat, Listing } from "../shared/Types/interface.ts";
 
 type PageKey = "marketplace" | "services" | "messages" | "dashboard";
 
@@ -17,10 +17,12 @@ interface BodyProps {
     categories?: Category[],
     courses?: Course[],
     services?: Service[],
+    chats?: Chat[],
+    listings?: Listing[],
 }
 
 
-export default function Body({ tab, search, setSearch, products, formatInit, categories, courses, services }: BodyProps) {
+export default function Body({ tab, search, setSearch, products, formatInit, categories, courses, services, setTab, chats, listings }: BodyProps) {
     const pages: Record<PageKey, JSX.Element> = {
         marketplace: <Marketplace search={search}
                                   setSearch={setSearch}
@@ -28,6 +30,8 @@ export default function Body({ tab, search, setSearch, products, formatInit, cat
                                   formatInit={formatInit}
                                   categories={categories}
                                   courses={courses}
+                                  setTab={setTab}
+                                  listings={listings}
         />,
         services: <Services search={search}
                             setSearch={setSearch}
@@ -35,7 +39,7 @@ export default function Body({ tab, search, setSearch, products, formatInit, cat
                             categories={categories}
                             formatInit={formatInit}
         />,
-        messages: <Messages/>,
+        messages: <Messages chats={chats}/>,
         dashboard: <Dashboard/>,
     };
 
