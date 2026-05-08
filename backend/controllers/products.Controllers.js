@@ -32,8 +32,7 @@ const createProduct = asyncHandler(async (req, res, next) => {
     if (
         !title || !description || !price || !sellerId ||
         !categoryId || !condition ||
-        !images || !images.length ||
-        !tags || !tags.length
+        !images || !images.length
     ) {
         return next(new CustomError("Missing required fields", 400));
     }

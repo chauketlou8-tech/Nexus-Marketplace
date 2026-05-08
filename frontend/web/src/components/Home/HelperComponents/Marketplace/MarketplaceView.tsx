@@ -1,21 +1,21 @@
 import { BookOpen, MessageCircle, Package, ShieldCheck } from "lucide-react"
 import { useEffect, useState } from "react";
 import type { Category, Product, User, Course, Listing } from "../../../shared/Types/interface.ts";
+import type { setString } from "../../../shared/Types/Types.ts";
 import getCategory from "../../../../api/categories/getCategory.ts";
 import getUser from "../../../../api/user/getUser.ts";
 import getCourse from "../../../../api/courses/getCourse.ts";
-import type { setString } from "../../../shared/Types/Types.ts";
+import formatInit from "../../../../utils/formatInit.ts";
 
 interface Props {
     products?: Product[];
-    formatInit: (name: string) => string;
     categories?: Category[];
     courses?: Course[];
     setTab?: setString;
     listings?: Listing[];
 }
 
-export default function MarketplaceView({ products, formatInit, categories, courses, setTab, listings }: Props) {
+export default function MarketplaceView({ products, categories, courses, setTab, listings }: Props) {
 
     const [textbooks, setTextbooks] = useState<Product[]>([]);
     const [items, setItems] = useState<Product[]>([]);
@@ -82,8 +82,7 @@ export default function MarketplaceView({ products, formatInit, categories, cour
         setCourse(newCourse);
 
         if (newCourse === "All Courses") {
-            setTextbooks(allTextbooks);
-            return;
+            return setTextbooks(allTextbooks);
         }
 
         const filtered: Product[] = [];
@@ -99,6 +98,34 @@ export default function MarketplaceView({ products, formatInit, categories, cour
         }
 
         setTextbooks(filtered);
+        console.log(textbooks);
+    }
+
+    async function changeCategoryFilter(e: { target: { value: string } }) {
+        console.log(e.target);
+        const newCategory: string = e.target.value;
+        setCategory(newCategory);
+
+        if (newCategory === "All Categories") {
+            return setItems(allItems);
+        }
+
+        const filtered: Product[] = [];
+
+        for (const item of allItems) {
+            if(!item.courseIds.length) continue;
+
+            for (const id of item.courseIds) {
+                const c = await getCourse(id);
+
+                if (c.name === newCategory) {
+                    filtered.push(item);
+                    break;
+                }
+            }
+        }
+
+        setItems(filtered);
     }
 
     async function changeSortFilter(e: { target: { value: string } }) {
@@ -191,7 +218,7 @@ export default function MarketplaceView({ products, formatInit, categories, cour
                         <div className="flex items-center justify-end p-4 gap-2">
                             <div className="flex flex-col items-start justify-center p-4 gap-2">
                                 <h3 className="text-[14px] font-[600]">Course filter</h3>
-                                <select onChange={changeCurrentCourseFilter} name="course" id="course" className="bg-gray-200/60 text-[12px] px-4 py-2 rounded-[8px] font-[500] w-[150px] outline-0">
+                                <select onChange={ changeCurrentCourseFilter } name="course" id="course" className="bg-gray-200/60 text-[12px] px-4 py-2 rounded-[8px] font-[500] w-[150px] outline-0">
                                     <option value="All Courses">All Courses</option>
                                     {courses?.map((c: Course) => (
                                         <option key={c.id} value={c.name}>{c.name}</option>
@@ -201,7 +228,7 @@ export default function MarketplaceView({ products, formatInit, categories, cour
 
                             <div className="flex flex-col items-start justify-center p-4 gap-2">
                                 <h3 className="text-[14px] font-[600]">Sort By</h3>
-                                <select onChange={changeSortFilter} name="sort" id="sort" className="bg-gray-200/60 text-[12px] px-4 py-2 rounded-[8px] w-[150px] font-[500] outline-0">
+                                <select onChange={ changeSortFilter } name="sort" id="sort" className="bg-gray-200/60 text-[12px] px-4 py-2 rounded-[8px] w-[150px] font-[500] outline-0">
                                     <option value="recently listed">Recently Listed</option>
                                     <option value="low-high">Price: Low to High</option>
                                     <option value="high-low">Price: High to Low</option>
@@ -214,13 +241,13 @@ export default function MarketplaceView({ products, formatInit, categories, cour
                     <div className="flex justify-between items-center w-full p-4">
                         <div>
                             <h2 className="text-black text-[22px] font-bold">Student Items</h2>
-                            <p className="text-[#999]">{items.length} items available</p>
+                            <p className="text-[#999]">{items.length} {items.length === 1 ? "item" : "items"} available</p>
                         </div>
 
                         <div className="flex items-center justify-end p-4 gap-2">
                             <div className="flex flex-col items-start justify-center p-4 gap-2">
                                 <h3 className="text-[14px] font-[600]">Category</h3>
-                                <select onChange={(e) => setCategory?.(e.target.value)} name="course" id="course" className="bg-gray-200/60 text-[12px] px-4 py-2 rounded-[8px] font-[500] w-[150px] outline-0">
+                                <select onChange={ changeCategoryFilter } name="course" id="course" className="bg-gray-200/60 text-[12px] px-4 py-2 rounded-[8px] font-[500] w-[150px] outline-0">
                                     <option value="All Courses">All Categories</option>
                                     {Categories.map((c: Category) => (
                                         <option value={c.name} key={c._id}>{c.slug}</option>
@@ -230,7 +257,7 @@ export default function MarketplaceView({ products, formatInit, categories, cour
 
                             <div className="flex flex-col items-start justify-center p-4 gap-2">
                                 <h3 className="text-[14px] font-[600]">Sort By</h3>
-                                <select onChange={(e) => setSort?.(e.target.value)} name="sort" id="sort" className="bg-gray-200/60 text-[12px] px-4 py-2 rounded-[8px] w-[150px] font-[500] outline-0">
+                                <select onChange={ changeSortFilter } name="sort" id="sort" className="bg-gray-200/60 text-[12px] px-4 py-2 rounded-[8px] w-[150px] font-[500] outline-0">
                                     <option value="recently listed">Recently Listed</option>
                                     <option value="low-high">Price: Low to High</option>
                                     <option value="high-low">Price: High to Low</option>
@@ -261,12 +288,10 @@ export default function MarketplaceView({ products, formatInit, categories, cour
                                     <div className="grid grid-cols-4 gap-4 w-full">
                                         {
                                             textbooks.map((book) => (
-                                                <div key={book._id} className="group flex flex-col items-start justify-center relative bg-gray-400/15 border border-gray-400/50 rounded-[20px] hover:border hover:border-purple-400 transition-all duration-250">
+                                                <div key={book._id} className="group flex flex-col items-start justify-start relative bg-gray-400/15 border border-gray-400/50 rounded-[5px] hover:border hover:border-purple-400 transition-all duration-250">
                                                     <div className="flex items-center justify-center w-full relative">
                                                         <div className="w-fit h-fit">
-                                                            <img src={`${book.images[0]}`} alt={`${book.tags[0] + " textbook"}`}
-                                                                 className="w-[400px] h-[250px] rounded-t-[20px]"
-                                                            />
+                                                            <img src={`${book.images[0]}`} alt={`${book.tags[0] + " textbook"}`} className="w-[400px] h-[250px] rounded-t-[5px]"/>
                                                         </div>
                                                     </div>
 
@@ -279,7 +304,7 @@ export default function MarketplaceView({ products, formatInit, categories, cour
                                                         <p className="text-[12px] text-[#333]">{book.description}</p>
 
                                                         <div className="flex items-center justify-start w-full gap-4 pt-4">
-                                                            <span className="flex justify-center items-center text-black rounded-[4px] border border-gray-400 px-5 h-[20px] pb-1">{book.condition}</span>
+                                                            <span className="flex justify-center items-center text-black text-[14px] rounded-[4px] border border-gray-400 px-5 h-[20px] py-1">{book.condition}</span>
                                                             <p className="text-[#999] text-[14px]">{book._id}</p>
                                                         </div>
 
@@ -323,35 +348,40 @@ export default function MarketplaceView({ products, formatInit, categories, cour
                                         </div>
                                     </div>
                                     :
-                                    <div>
+                                    <div className="grid grid-cols-4 gap-4 w-full">
                                         {
                                             items.map((item) => (
-                                                <div key={item._id}>
-                                                    <div>
-                                                        <img src={`${item.images[0]}`} alt={`${item.tags[0] + " textbook"}`} />
+                                                <div key={item._id} className="group flex flex-col items-start justify-start relative bg-gray-400/15 border border-gray-400/50 rounded-[5px] hover:border hover:border-purple-400 transition-all duration-250">
+                                                    <div className="flex items-center justify-center w-full relative">
+                                                        <img src={`${item.images[0]}`} alt={`${item.tags[0]}`} className="w-[400px] h-[250px] rounded-t-[5px]" />
                                                     </div>
 
-                                                    <div>
+                                                    <div className="flex flex-col justify-center items-start w-full p-5 gap-[2px]">
                                                         <div></div>
-                                                        <h2>{item.title}</h2>
-                                                        <p>{item.description}</p>
-                                                        <div>
-                                                            <span>{item.condition}</span>
-                                                            <p>{item._id}</p>
+
+                                                        <h2 className="text-black font-[600] text-[18px]">{item.title}</h2>
+                                                        <p className="text-[12px] text-[#333]">{item.description}</p>
+
+                                                        <div className="flex items-center justify-start w-full gap-4 pt-4">
+                                                            <span className="flex justify-center items-center text-black text-[14px] rounded-[4px] border border-gray-400 px-5 h-[20px] py-1">{item.condition}</span>
+                                                            <p className="text-[#999] text-[14px]">{item._id}</p>
                                                         </div>
-                                                        <div>
-                                                            <span>{formatInit(sellers[item.sellerId])}</span>
-                                                            <h3>{sellers[item.sellerId]}</h3>
-                                                            <ShieldCheck/>
+
+                                                        <div className="flex items-center justify-start w-full gap-1 py-4">
+                                                            <span style={{ background: color }} className="flex justify-center items-center w-[16px] h-[16px] rounded-[50%] p-4.5 text-[14px] text-white">{formatInit(sellers[item.sellerId])}</span>
+                                                            <h3 className="text-[#333] text-[15px] font-[400]">{sellers[item.sellerId]}</h3>
+                                                            <ShieldCheck className="text-blue-700 w-[18px] h-[18px]"/>
                                                         </div>
-                                                        <hr/>
-                                                        <div>
+
+                                                        <hr className="w-full"/>
+
+                                                        <div className="flex items-center justify-between w-full py-4">
                                                             <div>
-                                                                <h2>R{item.price}</h2>
+                                                                <h2 className="text-black text-[25px] font-[500]">R{item.price}</h2>
                                                             </div>
 
                                                             <div>
-                                                                <span>
+                                                                <span onClick={contactUser} className="flex justify-start items-center w-full bg-black text-white px-6 py-2 gap-2 rounded-[10px] cursor-pointer hover:bg-black/80">
                                                                     <MessageCircle/>
                                                                     Contact
                                                                 </span>

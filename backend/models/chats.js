@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const chatSchema = new mongoose.Schema({
     participants: [
         {
-            type: mongoose.Schema.Types.ObjectId,
+            type: Number,
             ref: 'User',
             required: true
         }
@@ -11,7 +11,7 @@ const chatSchema = new mongoose.Schema({
     lastMessage: {
         type: String,
         default: null
-    }
+    },
 }, { timestamps: true });
 
 const chatModel = mongoose.model('Chat', chatSchema);

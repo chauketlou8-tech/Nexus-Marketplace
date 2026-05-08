@@ -16,11 +16,14 @@ export default function Home({ user }: { user : User }) {
     const [search, setSearch] = useState<string>("");
 
     const [products, setProducts] = useState<Product[]>([]);
-    const [categories, setCategories] = useState<Category[]>([]);
+    //const [categories, setCategories] = useState<Category[]>([]);
     const [courses, setCourses] = useState<Course[]>([]);
     const [services, setServices] = useState<Service[]>([]);
     const [chats, setChats] = useState<Chat[]>([]);
     const [listings, setListings] = useState<Listing[]>([]);
+
+    const [productCategories, setProductCategories] = useState<Category[]>([]);
+    const [serviceCategories, setServiceCategories] = useState<Category[]>([]);
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -36,7 +39,24 @@ export default function Home({ user }: { user : User }) {
         const fetchCategories = async () => {
             try{
                 const allCategories: Category[] = await getCategories();
-                setCategories(allCategories);
+                const prodCategories: Category[] = [];
+                const servCategories: Category[] = [];
+
+                if(allCategories){
+                    for (const category of allCategories){
+                        const type: string | undefined = category.categoryType;
+
+                        if (type && type === "Product"){
+                            prodCategories.push(category);
+                        }
+                        else{
+                            servCategories.push(category);
+                        }
+                    }
+                }
+
+                setProductCategories(prodCategories);
+                setServiceCategories(servCategories);
             }
             catch (e) {
                 console.log(e);
@@ -57,7 +77,6 @@ export default function Home({ user }: { user : User }) {
             try{
                 const allServices: Service[] = await getServices();
                 setServices(allServices);
-                console.log(allServices);
             }
             catch (e) {
                 console.log(e)
@@ -92,36 +111,21 @@ export default function Home({ user }: { user : User }) {
         void fetchListings()
     }, []);
 
-    function formatInit(name: string) : string {
-        if (!name) return "";
-
-        const splitName: string[] = name.split(' ');
-        let initials: string = "";
-
-        if (splitName.length == 1) {
-            initials += splitName[0].charAt(0).toUpperCase() + splitName[0].charAt(1).toUpperCase();
-        }
-        else if (splitName.length >= 2) {
-            initials += splitName[0].charAt(0).toUpperCase() + splitName[splitName.length - 1].charAt(0).toUpperCase();
-        }
-
-        return initials;
-    }
-
     return (
         <div className="flex flex-col items-center justify-center text-gray-500 gap-2 bg-blue-50/30 h-full">
-            <Header tab={tab} setTab={setTab} search={search} setSearch={setSearch} user={user} formatInit={formatInit} />
+            <Header tab={tab} setTab={setTab} search={search} setSearch={setSearch} user={user} />
             <Body tab={tab}
                   setTab={setTab}
                   search={search}
                   setSearch={setSearch}
                   products={products}
-                  formatInit={formatInit}
-                  categories={categories}
+                  productCategories={productCategories}
+                  serviceCategories={serviceCategories}
                   courses={courses}
                   services={services}
                   chats={chats}
                   listings={listings}
+                  user={user}
             />
         </div>
     );

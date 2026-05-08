@@ -7,10 +7,9 @@ interface TabsProps {
     tab?: string
     setTab?: setString
     user: User
-    formatInit: (name: string) => string
 }
 
-export default function Tabs({ tab, setTab, user, formatInit }: TabsProps) {
+export default function Tabs({ tab, setTab, user }: TabsProps) {
     return (
         <div className="flex justify-between items-center w-full">
             <div className="flex justify-start items-center w-[60%] py-4 mr-4 gap-4">
@@ -42,7 +41,7 @@ export default function Tabs({ tab, setTab, user, formatInit }: TabsProps) {
             <span className="bg-[#ccc] w-[2px] h-[30px]"></span>
 
             <div className="flex justify-start items-center w-[30%] p-2 gap-4 bg-blue-50 rounded-[5px]">
-                <Profile user={user} formatInit={formatInit} />
+                <Profile user={user} />
             </div>
         </div>
     )

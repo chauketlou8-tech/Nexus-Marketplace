@@ -6,15 +6,14 @@ const getCategory = asyncHandler(async (req, res, next) => {
     const id = req.params.id;
 
     const category = await Categories.findById(id);
-    const slug = category.slug;
 
-    if (!slug) {
-        return next(new CustomError("Slug does not exist", 404));
+    if (!category) {
+        return next(new CustomError("Category does not exist", 404));
     }
 
     return res.status(200).json({
         success: true,
-        slug
+        slug: category.slug,
     });
 });
 

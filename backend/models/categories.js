@@ -9,6 +9,11 @@ const categorySchema = new mongoose.Schema({
     slug: {
         type: String,
         required: true
+    },
+    categoryType: {
+        type: String,
+        required: true,
+        enum: ['Product', 'Service']
     }
 }, { timestamps: true });
 

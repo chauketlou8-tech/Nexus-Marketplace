@@ -12,6 +12,7 @@ const createMessage = asyncHandler(async (req, res, next) => {
         return next(new CustomError("Missing fields", 400));
     }
 
+    //creates a new message
     const newMessage = await Messages.create({
         chatId,
         senderId,

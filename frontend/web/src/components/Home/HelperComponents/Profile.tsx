@@ -4,8 +4,9 @@ import { useState } from "react";
 import {useNavigate} from "react-router-dom";
 import logoutUser from "../../../api/user/logoutUser.ts";
 import UserProfile from "./UserProfile.tsx";
+import formatInit from "../../../utils/formatInit.ts";
 
-export default function Profile({ user, formatInit }: { user: U, formatInit: (name: string) => string }) {
+export default function Profile({ user }: { user: U }) {
 
     const [isShowProfile, setShowProfile] = useState(false);
     const colors : string[] = ["blue", "green", "purple", "red", "orange", "yellow"];

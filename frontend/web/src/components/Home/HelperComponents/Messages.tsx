@@ -1,8 +1,23 @@
-import { MessageCircle, Users, MessageSquare } from "lucide-react";
-import type { Chat } from "../../shared/Types/interface.ts"
+import { MessageCircle, Users, MessageSquare, ShieldCheck } from "lucide-react";
+import type { Chat, User } from "../../shared/Types/interface.ts"
+import formatInit from "../../../utils/formatInit.ts"
+//import { useState } from "react";
 
-export default function Messages({ chats } : {chats?: Chat[]}) {
-    console.log(chats)
+export default function Messages({ chats, currUser } : {chats?: Chat[], currUser: User}) {
+
+    //const [currChat, setCurrChat] = useState<Chat>();
+
+    //gets the name of the other user
+    const otherUsername = (participants: User[]): string => {
+        for (const participant of participants) {
+            if (Number(participant.id) === Number(currUser.id)) {
+                return participant.name as string;
+            }
+        }
+
+        return "";
+    }
+
     return (
         <div className="flex justify-between items-center gap-2 p-6 w-full">
             {
@@ -33,7 +48,31 @@ export default function Messages({ chats } : {chats?: Chat[]}) {
                             <div>
                                 {chats.map((chat: Chat) => (
                                     <div key={chat._id}>
+                                        <div>
+                                            {/*@ts-ignore*/}
+                                            {formatInit(otherUsername(chat.participants))}
+                                        </div>
 
+                                        <div>
+                                            <div>
+                                                {/*@ts-ignore*/}
+                                                {otherUsername(chat.participants)}
+                                                <ShieldCheck/>
+                                            </div>
+
+                                            <p>{chat.lastMessage}</p>
+                                        </div>
+
+                                        <div>
+                                            <p>{chat.updatedAt}</p>
+
+                                            {
+                                                chat.lastMessage.readStatus ?
+                                                    ""
+                                                    :
+                                                    <span>1</span>
+                                            }
+                                        </div>
                                     </div>
                                 ))}
                             </div>

@@ -8,11 +8,15 @@ const seedCategories = async () => {
         await Category.deleteMany({});
 
         const categories = [
-            { name: "Books", slug: "books" },
-            { name: "Electronics", slug: "electronics" },
-            { name: "Tutoring", slug: "tutoring" },
-            { name: "Accommodation", slug: "accommodation" },
-            { name: "Other", slug: "other" }
+            { name: "Books", slug: "books", categoryType: "Product" },
+            { name: "Electronics", slug: "electronics", categoryType: "Product" },
+            { name: "Tutoring", slug: "tutoring", categoryType: "Service" },
+            { name: "Coding", slug: "coding", categoryType: "Service" },
+            { name: "Accommodation", slug: "accommodation",categoryType: "Product" },
+            { name: "Writing", slug: "writing", categoryType: "Service" },
+            { name: "Software", slug: "software", categoryType: "Service" },
+            { name: "Reading", slug: "reading", categoryType: "Service" },
+            { name: "Other", slug: "other",categoryType: "Product" }
         ];
 
         await Category.insertMany(categories);

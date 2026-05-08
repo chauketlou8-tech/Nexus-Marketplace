@@ -27,6 +27,7 @@ export interface Category {
     _v?: number;
     name?: string;
     slug?: string;
+    categoryType?: string;
     createdAt?: Date;
     updatedAt?: Date;
 }
@@ -57,9 +58,11 @@ export interface Service {
 }
 
 export interface Chat {
-    _id?: string;
-    participants?: string[];
-    lastMessage?: string;
+    _id: string;
+    participants: string[];
+    lastMessage: any;
+    createdAt: string;
+    updatedAt: string;
 }
 
 export interface Listing {

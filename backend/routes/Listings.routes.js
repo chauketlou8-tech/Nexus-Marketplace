@@ -2,8 +2,9 @@ const express = require("express");
 const router = express.Router();
 
 const authMiddleware = require("../middleware/authMiddleware");
-const { getListings } = require("../controllers/listings.controllers");
+const { getListings, getListing } = require("../controllers/listings.controllers");
 
 router.get("/", authMiddleware, getListings);
+router.get("/:id", authMiddleware, getListing);
 
 module.exports = router;

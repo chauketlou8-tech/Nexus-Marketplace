@@ -46,8 +46,6 @@ const createService = asyncHandler(async (req, res, next) => {
         !description ||
         !providerId ||
         !categoryId ||
-        !courses?.length ||
-        !skills?.length ||
         !availability ||
         !pricing?.amount ||
         !pricing?.unit ||

@@ -7,14 +7,13 @@ interface SearchProps {
     search?: string;
     setSearch?: (value: (((prev: string) => string) | string)) => void;
     products?: Product[];
-    formatInit: (name: string) => string;
     categories?: Category[];
     courses?: Course[];
     setTab?: setString
     listings?: Listing[];
 }
 
-export default function Marketplace({ search, setSearch, products, formatInit, categories, courses, setTab, listings } : SearchProps) {
+export default function Marketplace({ search, setSearch, products, categories, courses, setTab, listings } : SearchProps) {
     void search
     void setSearch
 
@@ -22,7 +21,6 @@ export default function Marketplace({ search, setSearch, products, formatInit, c
         <div className="flex flex-col justify-center items-center w-full p-4">
             <RecommendationsPage/>
             <MarketplaceView products={products}
-                             formatInit={formatInit}
                              categories={categories}
                              courses={courses}
                              setTab={setTab}

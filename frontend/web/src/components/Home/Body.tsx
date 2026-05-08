@@ -3,7 +3,8 @@ import Services from "./HelperComponents/Services.tsx";
 import Messages from "./HelperComponents/Messages.tsx";
 import Dashboard from "./HelperComponents/DashBoard.tsx";
 import type { setString } from "../shared/Types/Types.ts";
-import type { Product, Category, Course, Service, Chat, Listing } from "../shared/Types/interface.ts";
+import type { Product, Category, Course, Service, Chat, Listing, User } from "../shared/Types/interface.ts";
+import type { ReactElement } from "react";
 
 type PageKey = "marketplace" | "services" | "messages" | "dashboard";
 
@@ -13,22 +14,22 @@ interface BodyProps {
     setTab?: setString,
     setSearch?: setString,
     products?: Product[],
-    formatInit: (name: string) => string,
-    categories?: Category[],
+    serviceCategories?: Category[],
+    productCategories?: Category[],
     courses?: Course[],
     services?: Service[],
     chats?: Chat[],
     listings?: Listing[],
+    user: User,
 }
 
 
-export default function Body({ tab, search, setSearch, products, formatInit, categories, courses, services, setTab, chats, listings }: BodyProps) {
-    const pages: Record<PageKey, JSX.Element> = {
+export default function Body({ tab, search, setSearch, products, serviceCategories, productCategories, courses, services, setTab, chats, listings, user }: BodyProps) {
+    const pages: Record<PageKey, ReactElement> = {
         marketplace: <Marketplace search={search}
                                   setSearch={setSearch}
                                   products={products}
-                                  formatInit={formatInit}
-                                  categories={categories}
+                                  categories={productCategories}
                                   courses={courses}
                                   setTab={setTab}
                                   listings={listings}
@@ -36,10 +37,9 @@ export default function Body({ tab, search, setSearch, products, formatInit, cat
         services: <Services search={search}
                             setSearch={setSearch}
                             services={services}
-                            categories={categories}
-                            formatInit={formatInit}
+                            categories={serviceCategories}
         />,
-        messages: <Messages chats={chats}/>,
+        messages: <Messages chats={chats} currUser={user}/>,
         dashboard: <Dashboard/>,
     };
 
