@@ -59,7 +59,7 @@ export interface Service {
 
 export interface Chat {
     _id: string;
-    participants: string[];
+    participants: number[];
     lastMessage: any;
     createdAt: string;
     updatedAt: string;

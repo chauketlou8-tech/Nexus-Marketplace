@@ -5,10 +5,11 @@ const { CustomError } = require("../errors/CustomError");
 
 // create message
 const createMessage = asyncHandler(async (req, res, next) => {
-    const { chatId, receiverId, message } = req.body;
+    const { chatId, message } = req.body;
     const senderId = req.user.id
+    console.log(senderId, chatId, message);
 
-    if (!chatId || !senderId || !receiverId || !message) {
+    if (!chatId || !senderId || !message) {
         return next(new CustomError("Missing fields", 400));
     }
 
@@ -16,7 +17,6 @@ const createMessage = asyncHandler(async (req, res, next) => {
     const newMessage = await Messages.create({
         chatId,
         senderId,
-        receiverId,
         message,
     });
 
@@ -90,8 +90,24 @@ const updateMessage = asyncHandler(async (req, res, next) => {
     });
 });
 
+const readMessage = asyncHandler(async (req, res, next) => {
+    const { chatId, message } = req.body;
+
+    if (!chatId || !message) {
+        return next(new CustomError("Please provide all the details", 400));
+    }
+
+    await Messages.findOneAndUpdate({ chatId, message }, { readStatus: true });
+
+    return res.status(200).json({
+        success: true,
+        message,
+    })
+});
+
 module.exports = {
     createMessage,
     deleteMessage,
     updateMessage,
+    readMessage,
 };

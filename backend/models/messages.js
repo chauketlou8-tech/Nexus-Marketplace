@@ -6,11 +6,7 @@ const messageSchema = new mongoose.Schema({
         required: true,
     },
     senderId: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: true,
-    },
-    receiverId: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: Number,
         required: true,
     },
     message: {

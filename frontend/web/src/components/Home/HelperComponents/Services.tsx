@@ -16,7 +16,7 @@ interface SearchProps {
 export default function Services({ search, setSearch, services, categories }: SearchProps) {
 
     const [shownServices, setShownServices] = useState<Service[]>([]);
-    const [sellers, setSellers] = useState<Record<string, string>>({});
+    const [providers, setProviders] = useState<Record<string, string>>({});
 
     const colors : string[] = ["blue", "green", "purple", "red", "orange", "yellow"];
     const [color] = useState<string>(colors[Math.floor(Math.random() * colors.length)]);
@@ -27,22 +27,20 @@ export default function Services({ search, setSearch, services, categories }: Se
         }
 
         const getProviders = async () => {
-            const sellerMap: Record<string, string> = {};
+            const providerMap: Record<string, string> = {};
 
             if (services) {
                 for (const service of services){
                     //@ts-ignore
                     const user: User = await getUser(service.providerId);
-                    console.log(user);
                     //@ts-ignore
-                    if (!sellerMap[service.providerId]){
+                    if (!providerMap[service.providerId]){
                         //@ts-ignore
-                        sellerMap[service.providerId] = user.name;
+                        providerMap[service.providerId] = user.name;
                     }
                 }
             }
-            console.log(sellerMap)
-            setSellers(sellerMap);
+            setProviders(providerMap);
         }
 
         void getProviders();
@@ -134,8 +132,8 @@ export default function Services({ search, setSearch, services, categories }: Se
                                             <p className="text-[14px] text-[#333] mt-2">{service.description}</p>
 
                                             <div className="flex items-center justify-start w-full gap-1 py-4">
-                                                <span style={{ background: color }} className="flex justify-center items-center w-[16px] h-[16px] rounded-[50%] p-4.5 text-[14px] text-white">{formatInit(sellers[service.providerId??""])}</span>
-                                                <h3 className="text-[#333] text-[15px] font-[400]">{sellers[service?.providerId??""]}</h3>
+                                                <span style={{ background: color }} className="flex justify-center items-center w-[16px] h-[16px] rounded-[50%] p-4.5 text-[14px] text-white">{formatInit(providers[service.providerId??""])}</span>
+                                                <h3 className="text-[#333] text-[15px] font-[400]">{providers[service?.providerId??""]}</h3>
                                                 <ShieldCheck className="text-blue-700 w-[18px] h-[18px]"/>
                                             </div>
 
