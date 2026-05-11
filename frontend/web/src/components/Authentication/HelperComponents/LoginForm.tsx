@@ -59,6 +59,7 @@ export default function Form({ setLogin, setSignIn, setCurrUser }: LoginPageProp
             const remainingTime = minLoadingTime - deltaTime;
 
             setCurrUser?.(user);
+            sessionStorage.setItem("currUser", JSON.stringify(user));
 
             setTimeout(()=> {
                 setIsLoading(false);

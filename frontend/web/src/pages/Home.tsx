@@ -1,8 +1,7 @@
 import Header from "../components/Home/Header.tsx";
 import Body from "../components/Home/Body.tsx";
 import { useState, useEffect } from "react";
-import type { User } from "../components/shared/Types/User.ts"
-import type { Product, Category, Course, Service, Chat, Listing } from "../components/shared/Types/interface.ts";
+import type { Product, Category, Course, Service, Chat, Listing, User } from "../components/shared/Types/interface.ts";
 import getProducts from "../api/products/getProducts.ts";
 import getCategories from "../api/categories/getCategories.ts";
 import getCourses from "../api/courses/getCourses.ts";
@@ -126,6 +125,7 @@ export default function Home({ user }: { user : User }) {
                   chats={chats}
                   listings={listings}
                   user={user}
+                  setChats={setChats}
             />
         </div>
     );

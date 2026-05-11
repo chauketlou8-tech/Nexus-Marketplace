@@ -2,7 +2,7 @@ import Marketplace from "./HelperComponents/Marketplace.tsx";
 import Services from "./HelperComponents/Services.tsx";
 import Messages from "./HelperComponents/Messages.tsx";
 import Dashboard from "./HelperComponents/DashBoard.tsx";
-import type { setString } from "../shared/Types/Types.ts";
+import type { setString, setArray } from "../shared/Types/Types.ts";
 import type { Product, Category, Course, Service, Chat, Listing, User } from "../shared/Types/interface.ts";
 import type { ReactElement } from "react";
 
@@ -21,10 +21,11 @@ interface BodyProps {
     chats?: Chat[],
     listings?: Listing[],
     user: User,
+    setChats: setArray
 }
 
 
-export default function Body({ tab, search, setSearch, products, serviceCategories, productCategories, courses, services, setTab, chats, listings, user }: BodyProps) {
+export default function Body({ tab, search, setSearch, products, serviceCategories, productCategories, courses, services, setTab, chats, listings, user, setChats }: BodyProps) {
     const pages: Record<PageKey, ReactElement> = {
         marketplace: <Marketplace search={search}
                                   setSearch={setSearch}
@@ -39,7 +40,7 @@ export default function Body({ tab, search, setSearch, products, serviceCategori
                             services={services}
                             categories={serviceCategories}
         />,
-        messages: <Messages chats={chats} currUser={user}/>,
+        messages: <Messages chats={chats} currUser={user} setChats={setChats}/>,
         dashboard: <Dashboard/>,
     };
 

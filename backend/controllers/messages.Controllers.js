@@ -25,9 +25,9 @@ const createMessage = asyncHandler(async (req, res, next) => {
         lastMessage: message,
     });
 
-    res.status(201).json({
+    return res.status(201).json({
         success: true,
-        data: newMessage,
+        message: newMessage,
     });
 });
 
@@ -50,7 +50,7 @@ const deleteMessage = asyncHandler(async (req, res, next) => {
         lastMessage: lastMsg ? lastMsg.message : "",
     });
 
-    res.status(200).json({
+    return res.status(200).json({
         success: true,
         deletedMessage,
     });
@@ -65,11 +65,7 @@ const updateMessage = asyncHandler(async (req, res, next) => {
         return next(new CustomError("Message required", 400));
     }
 
-    const updatedMessage = await Messages.findByIdAndUpdate(
-        id,
-        { message },
-        { new: true }
-    );
+    const updatedMessage = await Messages.findByIdAndUpdate(id, { message }, { new: true });
 
     if (!updatedMessage) {
         return next(new CustomError("Message not found", 404));
@@ -80,13 +76,48 @@ const updateMessage = asyncHandler(async (req, res, next) => {
         chatId: updatedMessage.chatId,
     }).sort({ createdAt: -1 });
 
-    await Chats.findByIdAndUpdate(updatedMessage.chatId, {
-        lastMessage: lastMsg ? lastMsg.message : "",
-    });
+    await Chats.findByIdAndUpdate(updatedMessage.chatId, {lastMessage: lastMsg ? lastMsg.message : "",}, {new: true});
 
-    res.status(200).json({
+    return res.status(200).json({
         success: true,
         updatedMessage,
+    });
+});
+
+const getMessage = asyncHandler(async (req, res, next) => {
+    const { chatId, message } = req.query;
+
+    if (!message || !chatId) {
+        return next(new CustomError("Please provide all the required information", 400));
+    }
+
+    const msg = await Messages.findOne({
+        chatId,
+        message,
+    });
+
+    if (!msg) {
+        return next(new CustomError("No message found", 404));
+    }
+
+    return res.status(200).json({
+        success: true,
+        msg,
+    });
+});
+
+const getMessages = asyncHandler(async (req, res, next) => {
+    const { chatId } = req.query;
+
+    if (!chatId) {
+        return next(new CustomError("No chatId provided", 400));
+    }
+
+    const messages = await Messages.find({ chatId });
+
+    return res.status(200).json({
+        success: true,
+        messages,
     });
 });
 
@@ -97,17 +128,19 @@ const readMessage = asyncHandler(async (req, res, next) => {
         return next(new CustomError("Please provide all the details", 400));
     }
 
-    await Messages.findOneAndUpdate({ chatId, message }, { readStatus: true });
+    await Messages.findOneAndUpdate({ chatId, message }, { readStatus: true }, {new: true});
 
     return res.status(200).json({
         success: true,
         message,
-    })
+    });
 });
 
 module.exports = {
     createMessage,
     deleteMessage,
     updateMessage,
+    getMessage,
+    getMessages,
     readMessage,
 };

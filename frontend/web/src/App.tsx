@@ -6,12 +6,16 @@ import type { User } from "./components/shared/Types/User.ts";
 
 function App() {
 
-    const [currUser, setCurrUser] = useState<User>({});
+    const [currUser, setCurrUser] = useState<User>(() => {
+        const saved = sessionStorage.getItem("currUser");
+        return saved ? JSON.parse(saved) : null;
+    });
 
-
-  return (
+    return (
       <Routes>
-          <Route path="/" element={< Authentication setCurrUser={setCurrUser}/> } />
+          <Route path="/" element={< Authentication setCurrUser={setCurrUser} user={currUser}/> } />
+
+          {/*@ts-ignore*/}
           <Route path="/Home" element={ <Home user={currUser} /> } />
       </Routes>
   )

@@ -65,6 +65,7 @@ export default function SignupForm({ setLogin, setSignIn, setForgotPassword, set
             const remainingTime = minLoadingTime - deltaTime;
 
             setCurrUser?.(user);
+            sessionStorage.setItem("currUser", JSON.stringify(user));
             console.log("User created");
 
             setTimeout(()=> {

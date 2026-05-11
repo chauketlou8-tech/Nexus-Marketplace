@@ -9,7 +9,5 @@ export const readMessage = async (chatId: string, message: string ) => {
         }
     });
 
-    console.log(data);
-
-    return data;
+    return data.message;
 }

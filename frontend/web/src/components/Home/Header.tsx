@@ -1,7 +1,7 @@
 import SearchBar from "./HelperComponents/SearchBar.tsx";
 import Logo from "../shared/Logo.tsx";
 import Tabs from "./HelperComponents/Tabs.tsx"
-import type { User } from "../shared/Types/User.ts";
+import type { User } from "../shared/Types/interface.ts";
 import type { setString } from "../shared/Types/Types.ts";
 
 interface HeaderProps {

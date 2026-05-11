@@ -1,16 +1,16 @@
 export interface User {
-    id?: number;
-    name?: string;
-    email?: string;
-    role?: string;
-    year?: number;
-    is_verified?: boolean;
-    created_at?: string;
-    last_updated?: string;
+    id: number;
+    name: string;
+    email: string;
+    role: string;
+    year: number;
+    is_verified: boolean;
+    created_at: Date;
+    last_updated: Date;
 }
 
 export interface Product {
-    _id?: string;
+    _id: string;
     title: string;
     description: string;
     price: number;
@@ -20,6 +20,8 @@ export interface Product {
     images: string[];
     tags: string[];
     courseIds: number[];
+    createdAt: Date;
+    updatedAt: Date;
 }
 
 export interface Category {
@@ -28,8 +30,8 @@ export interface Category {
     name?: string;
     slug?: string;
     categoryType?: string;
-    createdAt?: Date;
-    updatedAt?: Date;
+    createdAt: Date;
+    updatedAt: Date;
 }
 
 export interface Course {
@@ -55,23 +57,36 @@ export interface Service {
         unit?: string;
     }
     images?: string[];
+    createdAt: Date;
+    updatedAt: Date;
 }
 
 export interface Chat {
     _id: string;
     participants: number[];
     lastMessage: any;
-    createdAt: string;
-    updatedAt: string;
+    i: number;
+    createdAt: Date;
+    updatedAt: Date;
 }
 
 export interface Listing {
     _id?: string;
-    createdAt?: Date;
     itemId?: string;
     price?: number;
     sellerId?: number;
     status?: string;
-    updatedAt?: Date;
     itemType?: string;
+    createdAt: Date;
+    updatedAt: Date;
+}
+
+export interface Message {
+    _id?: string;
+    message: string;
+    chatId?: string;
+    readStatus: boolean;
+    senderId?: number;
+    createdAt?: Date;
+    updatedAt: Date;
 }

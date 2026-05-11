@@ -7,7 +7,7 @@ const { CustomError } = require("../errors/CustomError");
 const getUsers = asyncHandler(async (req, res) => {
     const results = await pool.query('select * from users');
 
-    res.status(200).json({
+    return res.status(200).json({
         status: 'success',
         users: results.rows,
     });
@@ -30,7 +30,7 @@ const getUser = asyncHandler(async (req, res, next) => {
         return next(new CustomError("User not found", 404));
     }
 
-    res.status(200).json({
+    return res.status(200).json({
         status: 'success',
         user,
     });
@@ -45,9 +45,22 @@ const logout = asyncHandler(async (req, res) => {
     await client.del(`online:${userId}`);
     await pool.query(`delete from Sessions where user_id = ${userId}`);
 
-    res.status(200).json({
+    return res.status(200).json({
         success: true,
         message: "Successfully logged out",
+    });
+});
+
+const getOnlineUsers = asyncHandler(async (req, res) => {
+    const client = await redisClient;
+
+    const keys = await client.keys("online:*");
+    const onlineUsers = keys.map(key => key.split(":")[1]);
+
+    return res.status(200).json({
+        status: 'success',
+        success: true,
+        onlineUsers,
     });
 });
 
@@ -55,4 +68,5 @@ module.exports = {
     getUsers,
     getUser,
     logout,
+    getOnlineUsers,
 };

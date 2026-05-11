@@ -1,7 +1,7 @@
-import type { User as U } from "../../shared/Types/User.ts";
+import type { User as U } from "../../shared/Types/interface.ts";
 import { ShieldCheck, User } from "lucide-react"
 import { useState } from "react";
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import logoutUser from "../../../api/user/logoutUser.ts";
 import UserProfile from "./UserProfile.tsx";
 import formatInit from "../../../utils/formatInit.ts";
