@@ -1,4 +1,4 @@
-import { MessageCircle, Users, ShieldCheck, Clock, Send, Lightbulb } from "lucide-react";
+import { MessageCircle, Users, ShieldCheck, Clock, Send, Lightbulb, Ban } from "lucide-react";
 import type { Chat, User, Message } from "../../shared/Types/interface.ts"
 import type { setArray } from "../../shared/Types/Types.ts";
 import formatInit from "../../../utils/formatInit.ts"
@@ -10,8 +10,17 @@ import getOnlineUsers from "../../../api/user/getOnlineUsers.ts";
 import getMessages from "../../../api/messages/getMessages.ts";
 import createMessage from "../../../api/messages/createMessage.ts";
 import MessageOptionsDialogue from "./Messages/messageOptionsDialogue.tsx";
+import deleteMessage from "../../../api/messages/deleteMessage.ts";
 
-export default function Messages({ chats, currUser, setChats } : {chats?: Chat[], currUser: User, setChats: setArray}) {
+interface MessageProps {
+    chats?: Chat[],
+    currUser: User,
+    setChats: setArray,
+    currChat: Chat | null,
+    setCurrChat: (c: Chat) => void
+}
+
+export default function Messages({ chats, currUser, setChats, setCurrChat, currChat } : MessageProps) {
 
     const [otherUsers, setOtherUsers] = useState<User[]>([]);
     const [statuses, setStatuses] = useState<boolean[]>([]);
@@ -20,12 +29,9 @@ export default function Messages({ chats, currUser, setChats } : {chats?: Chat[]
     const [sentMsg, setSentMsg] = useState<string>("");
     const [isOptionsOpen, setIsOptionsOpen] = useState<boolean>(false);
     const [option, setOption] = useState<string>("");
+    const [clickedMessage, setClickedMessage] = useState<Message | null>(null);
+    const [copied, setCopied] = useState<boolean>(false);
     void option
-
-    const [currChat, setCurrChat] = useState<Chat | null>(() => {
-        const saved = sessionStorage.getItem("currChat");
-        return saved ? JSON.parse(saved) : null;
-    });
 
     useEffect(() => {
         const getOtherUsers = async () => {
@@ -65,7 +71,7 @@ export default function Messages({ chats, currUser, setChats } : {chats?: Chat[]
         void getOtherUsers();
         void ss();
 
-    }, [chats, currUser.id]);
+    }, [chats, currUser.id, currChat]);
 
     useEffect(() => {
         const setMsgs = async () => {
@@ -76,6 +82,40 @@ export default function Messages({ chats, currUser, setChats } : {chats?: Chat[]
 
         void setMsgs();
     }, [currChat]);
+
+    useEffect(() => {
+        const handleOption = async () => {
+            if (!option || !clickedMessage || !currChat) return;
+
+            if (option === "copy"){
+                try{
+                    await navigator.clipboard.writeText(clickedMessage.message);
+                    setCopied(true);
+
+                    setTimeout(() => {
+                        setCopied(false);
+                        setIsOptionsOpen(false);
+                    }, 250);
+                }
+                catch(e){
+                    setIsOptionsOpen(false);
+                    console.error(e);
+                }
+            }
+            else if (option === "delete") {
+                await deleteMessage(clickedMessage._id, currChat._id);
+                setMessages(prev => prev.map(msg =>
+                    msg._id === clickedMessage._id
+                        ? { ...msg, message: "message deleted" }
+                        : msg
+                ));
+
+                setIsOptionsOpen(false);
+            }
+        }
+
+        void handleOption();
+    }, [option]);
 
     useEffect(() => {
         const setOnline = async () => {
@@ -130,11 +170,22 @@ export default function Messages({ chats, currUser, setChats } : {chats?: Chat[]
     }
 
     //when a message is clicked
-    const clickMessage = (e:any): void => {
-        console.log(e.clientX)
+    const clickMessage = (e: any, message: Message): void => {
+        //console.log(e.clientX)
+        if (!message) return;
         e.preventDefault();
+
+        setClickedMessage(message);
         setIsOptionsOpen(true);
     }
+
+    const otherUserId = currChat?.participants.find(
+        p => Number(p) !== Number(currUser.id)
+    );
+
+    const currentOtherUser = otherUsers.find(
+        u => Number(u.id) === Number(otherUserId)
+    );
 
     return (
         <div className="flex justify-between items-center gap-2 p-6 w-full overflow-y-hidden">
@@ -178,7 +229,15 @@ export default function Messages({ chats, currUser, setChats } : {chats?: Chat[]
                                                 <ShieldCheck className="text-blue-500 w-[18px] h-[18px]"/>
                                             </div>
 
-                                            <p className="text-[#666] text-[14px]">{ chat.lastMessage || ""}</p>
+                                            {
+                                                chat.lastMessage === "message deleted"?
+                                                    <span className="flex items-center gap-2">
+                                                        <Ban className="w-[14px] h-[14px]"/>
+                                                        <p className={`text-[13px] italic text-[#666]`}>message deleted</p>
+                                                    </span>
+                                                    :
+                                                    <p className="text-[#666] text-[14px]">{ chat.lastMessage || "loading..."}</p>
+                                            }
                                         </div>
 
                                         <div className="flex flex-col items-end justify-start">
@@ -205,21 +264,21 @@ export default function Messages({ chats, currUser, setChats } : {chats?: Chat[]
                             currChat ?
                                 <div className="flex flex-col items-start justify-start text-gray-500 gap-2 w-full flex-grow">
                                     <div className="flex justify-start items-center w-full gap-2">
-                                        <span className="flex justify-center items-center rounded-[50%] p-3.5 text-[18px] font-[600] text-white bg-blue-500">{formatInit(otherUsers[currChat.i]?.name || "")}</span>
+                                        <span className="flex justify-center items-center rounded-[50%] p-3.5 text-[18px] font-[600] text-white bg-blue-500">{formatInit(currentOtherUser?.name || "")}</span>
 
                                         <div className="flex flex-col items-start justify-start w-full pl-1">
                                             <div className="flex justify-start items-center w-full gap-2">
-                                                <h2 className="text-black text-[16px] whitespace-nowrap">{otherUsers[currChat.i]?.name}</h2>
+                                                <h2 className="text-black text-[16px] whitespace-nowrap">{currentOtherUser?.name}</h2>
                                                 <ShieldCheck className="text-blue-500 w-[18px] h-[18px]"/>
 
                                                 {
-                                                    otherUsers[currChat.i]?.is_verified &&
+                                                    currentOtherUser?.is_verified &&
                                                     <span>Verified UCT Student</span>
                                                 }
                                             </div>
 
                                             {
-                                                onlineUsers.some((u: string) => Number(u) === Number(otherUsers[currChat.i]?.id)) ?
+                                                onlineUsers.some((u: string) => Number(u) === Number(currentOtherUser?.id)) ?
                                                     <div className="flex justify-start items-center w-full gap-2">
                                                         <span className="inline-block w-[10px] h-[10px] rounded-[50%] bg-green-500 animate-pulse"></span>
                                                         <p className="font-[400] text-green-400 text-[14px]">Active now</p>
@@ -244,19 +303,28 @@ export default function Messages({ chats, currUser, setChats } : {chats?: Chat[]
                                                 :
                                                 <div onClick={() => setIsOptionsOpen(false)} className="flex flex-col w-full gap-8 relative">
                                                     { messages.map((message: Message) => (
-                                                        <div onContextMenu={clickMessage} key={message._id} className={`flex items-center w-full ${message.senderId === currUser.id ? "justify-end" : "justify-start"}`}>
+                                                        <div onContextMenu={(e) => clickMessage(e, message)} key={message._id} className={`flex items-center w-full ${message.senderId === currUser.id ? "justify-end" : "justify-start"}`}>
                                                             <div className={`flex flex-col w-fit px-4 py-3 rounded-[10px] gap-1 ${message.senderId === currUser.id ? "bg-blue-600" : "bg-gray-100"}`}>
-                                                                <p className={`text-[13px] ${message.senderId === currUser.id ? "text-white" : "text-[#333]"}`}>{message.message}</p>
-
-                                                                <span className="flex justify-start items-center gap-1">
-                                                                    <Clock className="w-[14px] h-[14px]" stroke={`${message.senderId === currUser.id ? "#fff" : "#666"}`}/>
-                                                                    <p className={`text-[12px] ${message.senderId === currUser.id ? "text-white" : "text-[#999]"}`}>{formatDate(message.updatedAt)}</p>
-                                                                </span>
+                                                                {
+                                                                    message.message === "message deleted" ?
+                                                                        <div className="flex items-center gap-1">
+                                                                            <Ban className="w-[14px] h-[14px] opacity-80" stroke={`${message.senderId === currUser.id ? "#ccc" : "#999"}`}/>
+                                                                            <p className={`text-[13px] italic ${message.senderId === currUser.id ? "text-white/60" : "text-[#999]"}`}>Message deleted</p>
+                                                                        </div>
+                                                                        :
+                                                                        <>
+                                                                            <p className={`text-[13px] ${message.senderId === currUser.id ? "text-white" : "text-[#333]"}`}>{message.message}</p>
+                                                                            <span className="flex justify-start items-center gap-1">
+                                                                                <Clock className="w-[14px] h-[14px]" stroke={`${message.senderId === currUser.id ? "#fff" : "#666"}`}/>
+                                                                                <p className={`text-[12px] ${message.senderId === currUser.id ? "text-white" : "text-[#999]"}`}>{formatDate(message.updatedAt)}</p>
+                                                                            </span>
+                                                                        </>
+                                                                }
                                                             </div>
                                                         </div>
                                                     )) }
 
-                                                    <MessageOptionsDialogue isOptionsOpen={isOptionsOpen} setIsOptionsOpen={setIsOptionsOpen} setOption={setOption}/>
+                                                    <MessageOptionsDialogue isOptionsOpen={isOptionsOpen} setIsOptionsOpen={setIsOptionsOpen} setOption={setOption} copied={copied}/>
                                                 </div>
                                         }
                                     </div>

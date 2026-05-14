@@ -65,7 +65,7 @@ export interface Chat {
     _id: string;
     participants: number[];
     lastMessage: any;
-    i: number;
+    i?: number;
     createdAt: Date;
     updatedAt: Date;
 }

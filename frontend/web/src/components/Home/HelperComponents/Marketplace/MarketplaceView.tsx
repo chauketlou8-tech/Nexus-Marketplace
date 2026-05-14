@@ -1,11 +1,13 @@
 import { BookOpen, MessageCircle, Package, ShieldCheck } from "lucide-react"
 import { useEffect, useState } from "react";
-import type { Category, Product, User, Course, Listing } from "../../../shared/Types/interface.ts";
+import type {Category, Product, User, Course, Listing, Chat} from "../../../shared/Types/interface.ts";
 import type { setString } from "../../../shared/Types/Types.ts";
 import getCategory from "../../../../api/categories/getCategory.ts";
 import getUser from "../../../../api/user/getUser.ts";
 import getCourse from "../../../../api/courses/getCourse.ts";
 import formatInit from "../../../../utils/formatInit.ts";
+import getChat from "../../../../api/chats/getChat.ts";
+import createChat from "../../../../api/chats/createChat.ts";
 
 interface Props {
     products?: Product[];
@@ -13,9 +15,12 @@ interface Props {
     courses?: Course[];
     setTab?: setString;
     listings?: Listing[];
+    user: User;
+    currChat: Chat | null;
+    setCurrChat: (c: Chat) => void;
 }
 
-export default function MarketplaceView({ products, categories, courses, setTab, listings }: Props) {
+export default function MarketplaceView({ products, categories, courses, setTab, listings, user, setCurrChat, currChat }: Props) {
 
     const [textbooks, setTextbooks] = useState<Product[]>([]);
     const [items, setItems] = useState<Product[]>([]);
@@ -98,7 +103,6 @@ export default function MarketplaceView({ products, categories, courses, setTab,
         }
 
         setTextbooks(filtered);
-        console.log(textbooks);
     }
 
     async function changeCategoryFilter(e: { target: { value: string } }) {
@@ -185,13 +189,31 @@ export default function MarketplaceView({ products, categories, courses, setTab,
         }
     }
 
-    function contactUser(): void {
-        setTab?.("messages");
+    async function contactUser(item: Product): Promise<void> {
+        if (item.sellerId === user.id){
+            return window.location.reload();
+        }
+
+        //get the chat if it exists
+        const chat: Chat = await getChat([item.sellerId, user.id]);
+
+        //check if chat exist
+        if (chat) {
+            setCurrChat(chat);
+            setTab?.("messages");
+        }
+        else {
+            //create and get the chat if it doesn't exist
+            const chat: Chat = await createChat([item.sellerId, user.id]);
+            setCurrChat(chat);
+            setTab?.("messages");
+        }
     }
 
     void course
     void sort
     void category
+    void currChat
 
     return (
         <div className="flex flex-col justify-center items-center w-full p-4">
@@ -322,7 +344,7 @@ export default function MarketplaceView({ products, categories, courses, setTab,
                                                             </div>
 
                                                             <div>
-                                                                <span onClick={contactUser} className="flex justify-start items-center w-full bg-black text-white px-6 py-2 gap-2 rounded-[10px] cursor-pointer hover:bg-black/80">
+                                                                <span onClick={() => contactUser(book)}  className="flex justify-start items-center w-full bg-black text-white px-6 py-2 gap-2 rounded-[10px] cursor-pointer hover:bg-black/80">
                                                                     <MessageCircle/>
                                                                     Contact
                                                                 </span>
@@ -381,7 +403,7 @@ export default function MarketplaceView({ products, categories, courses, setTab,
                                                             </div>
 
                                                             <div>
-                                                                <span onClick={contactUser} className="flex justify-start items-center w-full bg-black text-white px-6 py-2 gap-2 rounded-[10px] cursor-pointer hover:bg-black/80">
+                                                                <span onClick={() => contactUser(item)} className="flex justify-start items-center w-full bg-black text-white px-6 py-2 gap-2 rounded-[10px] cursor-pointer hover:bg-black/80">
                                                                     <MessageCircle/>
                                                                     Contact
                                                                 </span>

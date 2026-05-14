@@ -34,21 +34,19 @@ const createMessage = asyncHandler(async (req, res, next) => {
 // delete message
 const deleteMessage = asyncHandler(async (req, res, next) => {
     const { id } = req.params;
+    const { chatId } = req.query;
 
-    const deletedMessage = await Messages.findByIdAndDelete(id);
+    const deletedMessage = await Messages.findByIdAndUpdate(id, {
+        message: "message deleted",
+    }, {new: true});
 
     if (!deletedMessage) {
         return next(new CustomError("Message not found", 404));
     }
 
-    // update chat last message (get latest message)
-    const lastMsg = await Messages.findOne({
-        chatId: deletedMessage.chatId,
-    }).sort({ createdAt: -1 });
-
-    await Chats.findByIdAndUpdate(deletedMessage.chatId, {
-        lastMessage: lastMsg ? lastMsg.message : "",
-    });
+    await Chats.findByIdAndUpdate({_id: chatId}, {
+        lastMessage: "message deleted"
+    }, {new: true});
 
     return res.status(200).json({
         success: true,
@@ -108,6 +106,7 @@ const getMessage = asyncHandler(async (req, res, next) => {
 
 const getMessages = asyncHandler(async (req, res, next) => {
     const { chatId } = req.query;
+    console.log(chatId);
 
     if (!chatId) {
         return next(new CustomError("No chatId provided", 400));

@@ -14,9 +14,12 @@ const getChats = asyncHandler(async (req, res) => {
 });
 
 const getChat = asyncHandler(async (req, res, next) => {
-    const { id } = req.params;
+    const { participants } = req.query;
+    const participantsArray = participants.split(",");
 
-    const chat = await Chats.findById(id);
+    const chat = await Chats.findOne({
+        participants: { $all: participantsArray }
+    });
 
     if (!chat) {
         return next(new CustomError("Chat not found", 404));
@@ -30,12 +33,13 @@ const getChat = asyncHandler(async (req, res, next) => {
 
 const createChat = asyncHandler(async (req, res, next) => {
     const { participants } = req.body;
+    const participantsArray = participants.split(",");
 
     if (!participants || participants.length < 2) {
         return next(new CustomError("Participants required", 400));
     }
 
-    const chat = await Chats.create({ participants });
+    const chat = await Chats.create({ participants: { $all: participantsArray } });
 
     res.status(201).json({
         status: "success",

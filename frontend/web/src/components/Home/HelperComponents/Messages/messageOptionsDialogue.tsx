@@ -1,7 +1,7 @@
-import { Trash, Reply, Copy, ThumbsDown, Pin } from "lucide-react";
+import { Trash, Reply, Copy, ThumbsDown, Pin, Check } from "lucide-react";
 import type { setBool, setString } from "../../../shared/Types/Types.ts";
 
-export default function MessageOptionsDialogue({ isOptionsOpen, setIsOptionsOpen, setOption } : { isOptionsOpen: boolean, setIsOptionsOpen: setBool, setOption: setString }) {
+export default function MessageOptionsDialogue({ isOptionsOpen, setIsOptionsOpen, setOption, copied } : { isOptionsOpen: boolean, setIsOptionsOpen: setBool, setOption: setString, copied: boolean }) {
     void setIsOptionsOpen
 
     return (
@@ -22,7 +22,9 @@ export default function MessageOptionsDialogue({ isOptionsOpen, setIsOptionsOpen
                     e.preventDefault();
                     setOption("copy")
                 }} className="flex justify-start items-center gap-1 p-1 text-black text-[12px] rounded-[4px] cursor-pointer hover:bg-gray-200">
-                    <Copy className="w-4 h-4"/>
+                    {
+                        copied ? <Check className="w-4 h-4"/> : <Copy className="w-4 h-4"/>
+                    }
                     Copy
                 </span>
 

@@ -21,11 +21,13 @@ interface BodyProps {
     chats?: Chat[],
     listings?: Listing[],
     user: User,
-    setChats: setArray
+    setChats: setArray,
+    currChat: Chat | null,
+    setCurrChat: (chat: Chat) => void,
 }
 
 
-export default function Body({ tab, search, setSearch, products, serviceCategories, productCategories, courses, services, setTab, chats, listings, user, setChats }: BodyProps) {
+export default function Body({ tab, search, setSearch, products, serviceCategories, productCategories, courses, services, setTab, chats, listings, user, setChats, setCurrChat, currChat }: BodyProps) {
     const pages: Record<PageKey, ReactElement> = {
         marketplace: <Marketplace search={search}
                                   setSearch={setSearch}
@@ -34,13 +36,21 @@ export default function Body({ tab, search, setSearch, products, serviceCategori
                                   courses={courses}
                                   setTab={setTab}
                                   listings={listings}
+                                  user={user}
+                                  currChat={currChat}
+                                  setCurrChat={setCurrChat}
         />,
         services: <Services search={search}
                             setSearch={setSearch}
                             services={services}
                             categories={serviceCategories}
         />,
-        messages: <Messages chats={chats} currUser={user} setChats={setChats}/>,
+        messages: <Messages chats={chats}
+                            currUser={user}
+                            setChats={setChats}
+                            currChat={currChat}
+                            setCurrChat={setCurrChat}
+        />,
         dashboard: <Dashboard/>,
     };
 

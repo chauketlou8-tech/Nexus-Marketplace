@@ -24,6 +24,11 @@ export default function Home({ user }: { user : User }) {
     const [productCategories, setProductCategories] = useState<Category[]>([]);
     const [serviceCategories, setServiceCategories] = useState<Category[]>([]);
 
+    const [currChat, setCurrChat] = useState<Chat | null>(() => {
+        const saved = sessionStorage.getItem("currChat");
+        return saved ? JSON.parse(saved) : null;
+    });
+
     useEffect(() => {
         const fetchProducts = async () => {
             try{
@@ -126,6 +131,8 @@ export default function Home({ user }: { user : User }) {
                   listings={listings}
                   user={user}
                   setChats={setChats}
+                  currChat={currChat}
+                  setCurrChat={setCurrChat}
             />
         </div>
     );
