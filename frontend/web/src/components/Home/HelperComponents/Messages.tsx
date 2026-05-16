@@ -3,7 +3,7 @@ import type { Chat, User, Message } from "../../shared/Types/interface.ts"
 import type { setArray } from "../../shared/Types/Types.ts";
 import formatInit from "../../../utils/formatInit.ts"
 import getUser from "../../../api/user/getUser.ts";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { readMessage as read }from "../../../api/messages/readMessage.ts";
 import getMessage from "../../../api/messages/getMessage.ts";
 import getOnlineUsers from "../../../api/user/getOnlineUsers.ts";
@@ -31,7 +31,8 @@ export default function Messages({ chats, currUser, setChats, setCurrChat, currC
     const [option, setOption] = useState<string>("");
     const [clickedMessage, setClickedMessage] = useState<Message | null>(null);
     const [copied, setCopied] = useState<boolean>(false);
-    void option
+    const messagesEndRef = useRef<HTMLDivElement>(null);
+    const [menuPosition, setMenuPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
 
     useEffect(() => {
         const getOtherUsers = async () => {
@@ -103,11 +104,19 @@ export default function Messages({ chats, currUser, setChats, setCurrChat, currC
                 }
             }
             else if (option === "delete") {
+                if (clickedMessage?.senderId !== currUser.id) return setIsOptionsOpen(false);
+
                 await deleteMessage(clickedMessage._id, currChat._id);
                 setMessages(prev => prev.map(msg =>
                     msg._id === clickedMessage._id
                         ? { ...msg, message: "message deleted" }
                         : msg
+                ));
+
+                setChats(prev => prev.map((chat: Chat) =>
+                    chat._id === currChat._id
+                        ? { ...chat, lastMessage: "message deleted" }
+                        : chat
                 ));
 
                 setIsOptionsOpen(false);
@@ -116,6 +125,10 @@ export default function Messages({ chats, currUser, setChats, setCurrChat, currC
 
         void handleOption();
     }, [option]);
+
+    useEffect(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, [messages]);
 
     useEffect(() => {
         const setOnline = async () => {
@@ -171,11 +184,11 @@ export default function Messages({ chats, currUser, setChats, setCurrChat, currC
 
     //when a message is clicked
     const clickMessage = (e: any, message: Message): void => {
-        //console.log(e.clientX)
         if (!message) return;
         e.preventDefault();
-
+        setMenuPosition({ x: e.clientX, y: e.clientY - 161 });
         setClickedMessage(message);
+
         setIsOptionsOpen(true);
     }
 
@@ -188,7 +201,7 @@ export default function Messages({ chats, currUser, setChats, setCurrChat, currC
     );
 
     return (
-        <div className="flex justify-between items-center gap-2 p-6 w-full overflow-y-hidden">
+        <div className="flex justify-between items-center gap-2 p-6 w-full overflow-hidden">
             {
                 chats &&
 
@@ -236,7 +249,7 @@ export default function Messages({ chats, currUser, setChats, setCurrChat, currC
                                                         <p className={`text-[13px] italic text-[#666]`}>message deleted</p>
                                                     </span>
                                                     :
-                                                    <p className="text-[#666] text-[14px]">{ chat.lastMessage || "loading..."}</p>
+                                                    <p className="text-[#666] text-[13px] line-clamp-2">{ chat.lastMessage || "loading..."}</p>
                                             }
                                         </div>
 
@@ -244,7 +257,7 @@ export default function Messages({ chats, currUser, setChats, setCurrChat, currC
                                             <p className="text-[#333] text-[14px]">{formatDate(chat.updatedAt)}</p>
 
                                             {
-                                                statuses[i] ?
+                                                statuses[i] || currChat ?
                                                     ""
                                                     :
                                                     <span className="flex justify-center items-center bg-black text-white text-[10px] w-[18px] h-[18px] p-2 font-bold rounded-[4px]">1</span>
@@ -294,7 +307,7 @@ export default function Messages({ chats, currUser, setChats, setCurrChat, currC
 
                                     <hr className="w-full"/>
 
-                                    <div className="flex justify-start items-start w-full p-6 pb-0 h-[360px] overflow-y-auto scroll-hide">
+                                    <div onWheel={() => setIsOptionsOpen(false)} className="flex justify-start items-start w-full p-6 pb-0 h-[360px] overflow-y-auto scroll-hide">
                                         {
                                             messages && messages.length === 0 ?
                                                 <div>
@@ -303,8 +316,8 @@ export default function Messages({ chats, currUser, setChats, setCurrChat, currC
                                                 :
                                                 <div onClick={() => setIsOptionsOpen(false)} className="flex flex-col w-full gap-8 relative">
                                                     { messages.map((message: Message) => (
-                                                        <div onContextMenu={(e) => clickMessage(e, message)} key={message._id} className={`flex items-center w-full ${message.senderId === currUser.id ? "justify-end" : "justify-start"}`}>
-                                                            <div className={`flex flex-col w-fit px-4 py-3 rounded-[10px] gap-1 ${message.senderId === currUser.id ? "bg-blue-600" : "bg-gray-100"}`}>
+                                                        <div key={message._id} className={`flex items-center w-full ${message.senderId === currUser.id ? "justify-end" : "justify-start"}`}>
+                                                            <div onContextMenu={(e) => clickMessage(e, message)} className={`flex flex-col w-fit px-4 py-3 rounded-[10px] gap-1 ${message.senderId === currUser.id ? "bg-blue-600" : "bg-gray-100"}`}>
                                                                 {
                                                                     message.message === "message deleted" ?
                                                                         <div className="flex items-center gap-1">
@@ -324,7 +337,8 @@ export default function Messages({ chats, currUser, setChats, setCurrChat, currC
                                                         </div>
                                                     )) }
 
-                                                    <MessageOptionsDialogue isOptionsOpen={isOptionsOpen} setIsOptionsOpen={setIsOptionsOpen} setOption={setOption} copied={copied}/>
+                                                    <MessageOptionsDialogue isOptionsOpen={isOptionsOpen} setIsOptionsOpen={setIsOptionsOpen} setOption={setOption} copied={copied} menuPosition={menuPosition}/>
+                                                    <div ref={messagesEndRef} />
                                                 </div>
                                         }
                                     </div>

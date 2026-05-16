@@ -1,12 +1,23 @@
 import { Trash, Reply, Copy, ThumbsDown, Pin, Check } from "lucide-react";
 import type { setBool, setString } from "../../../shared/Types/Types.ts";
 
-export default function MessageOptionsDialogue({ isOptionsOpen, setIsOptionsOpen, setOption, copied } : { isOptionsOpen: boolean, setIsOptionsOpen: setBool, setOption: setString, copied: boolean }) {
+interface props {
+    isOptionsOpen: boolean
+    setIsOptionsOpen: setBool
+    setOption: setString
+    copied: boolean
+    menuPosition: {
+        x: number,
+        y: number
+    }
+}
+
+export default function MessageOptionsDialogue({ isOptionsOpen, setIsOptionsOpen, setOption, copied, menuPosition } : props) {
     void setIsOptionsOpen
 
     return (
         isOptionsOpen &&
-        <div className="flex flex-col bg-white absolute left-70 py-4 w-[90px] border border-gray-500 rounded-[4px] gap-4">
+        <div style={{ top: menuPosition.y, left: menuPosition.x }} className="fixed flex flex-col bg-white py-4 w-[90px] border border-gray-500 rounded-[4px] gap-4 z-[9999]">
             <div className="flex flex-col gap-2 px-1">
                 <span onClick={(e) => {
                     e.stopPropagation();

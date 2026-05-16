@@ -111,7 +111,7 @@ npm install
 
 ```bash id="xv3o3n"
 cd python-analytics
-pip install -r requirements.txt
+pip install -r requirements.txt.txt
 ```
 
 #### Java

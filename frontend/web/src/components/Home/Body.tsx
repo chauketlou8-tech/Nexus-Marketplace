@@ -44,6 +44,9 @@ export default function Body({ tab, search, setSearch, products, serviceCategori
                             setSearch={setSearch}
                             services={services}
                             categories={serviceCategories}
+                            setCurrChat={setCurrChat}
+                            user={user}
+                            setTab={setTab}
         />,
         messages: <Messages chats={chats}
                             currUser={user}

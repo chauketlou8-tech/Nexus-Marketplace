@@ -189,7 +189,7 @@ export default function MarketplaceView({ products, categories, courses, setTab,
         }
     }
 
-    async function contactUser(item: Product): Promise<void> {
+    async function contactSeller(item: Product): Promise<void> {
         if (item.sellerId === user.id){
             return window.location.reload();
         }
@@ -204,8 +204,8 @@ export default function MarketplaceView({ products, categories, courses, setTab,
         }
         else {
             //create and get the chat if it doesn't exist
-            const chat: Chat = await createChat([item.sellerId, user.id]);
-            setCurrChat(chat);
+            const c: Chat = await createChat([item.sellerId, user.id]);
+            setCurrChat(c);
             setTab?.("messages");
         }
     }
@@ -344,7 +344,7 @@ export default function MarketplaceView({ products, categories, courses, setTab,
                                                             </div>
 
                                                             <div>
-                                                                <span onClick={() => contactUser(book)}  className="flex justify-start items-center w-full bg-black text-white px-6 py-2 gap-2 rounded-[10px] cursor-pointer hover:bg-black/80">
+                                                                <span onClick={() => contactSeller(book)}  className="flex justify-start items-center w-full bg-black text-white px-6 py-2 gap-2 rounded-[10px] cursor-pointer hover:bg-black/80">
                                                                     <MessageCircle/>
                                                                     Contact
                                                                 </span>
@@ -403,7 +403,7 @@ export default function MarketplaceView({ products, categories, courses, setTab,
                                                             </div>
 
                                                             <div>
-                                                                <span onClick={() => contactUser(item)} className="flex justify-start items-center w-full bg-black text-white px-6 py-2 gap-2 rounded-[10px] cursor-pointer hover:bg-black/80">
+                                                                <span onClick={() => contactSeller(item)} className="flex justify-start items-center w-full bg-black text-white px-6 py-2 gap-2 rounded-[10px] cursor-pointer hover:bg-black/80">
                                                                     <MessageCircle/>
                                                                     Contact
                                                                 </span>

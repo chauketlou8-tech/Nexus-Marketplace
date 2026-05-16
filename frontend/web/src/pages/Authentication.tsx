@@ -2,22 +2,15 @@ import { useState } from "react";
 import LoginPage from "../components/Authentication/LoginPage.tsx";
 import SignupPage from "../components/Authentication/SignupPage.tsx";
 import ForgotPasswordPage from "../components/Authentication/ForgotPassword.tsx";
-import type { setUser, User } from "../components/shared/Types/User.ts";
-import logoutUser from "../api/user/logoutUser.ts";
+import type { setUser } from "../components/shared/Types/User.ts";
 
-export default function Authentication({ setCurrUser, user } : { setCurrUser: setUser, user: User }) {
+export default function Authentication({ setCurrUser } : { setCurrUser: setUser }) {
     const [isLogin, setLogin] = useState(true);
     const [isSignIn, setSignIn] = useState(false);
     const [isForgotPassword, setForgotPassword] = useState(false);
 
-    const logout = async () => {
-        if (!user) return;
-        await logoutUser(user.id);
-    }
-
     //@ts-ignore
     sessionStorage.setItem("currChat", null);
-    void logout();
 
     if (isLogin) return <LoginPage setLogin={setLogin} setSignIn={setSignIn} setForgotPassword={setForgotPassword} setCurrUser={setCurrUser} />
     else if(isSignIn) return <SignupPage setLogin={setLogin} setSignIn={setSignIn} setForgotPassword={setForgotPassword} setCurrUser={setCurrUser} />

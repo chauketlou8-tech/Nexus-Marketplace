@@ -1,19 +1,24 @@
 import {Cog, Clock, MessageCircle, ShieldCheck} from "lucide-react"
 import type { setString } from "../../shared/Types/Types.ts";
-import type { Service, Category, User } from "../../shared/Types/interface.ts";
+import type { Service, Category, User, Chat } from "../../shared/Types/interface.ts";
 import { useState, useEffect } from "react";
 import getCategory from "../../../api/categories/getCategory.ts";
 import getUser from "../../../api/user/getUser.ts";
 import formatInit from "../../../utils/formatInit.ts";
+import getChat from "../../../api/chats/getChat.ts";
+import createChat from "../../../api/chats/createChat.ts";
 
 interface SearchProps {
     search?: string;
     setSearch?: setString;
     services?: Service[];
     categories?: Category[];
+    setCurrChat: (chat: Chat) => void;
+    user: User;
+    setTab?: setString;
 }
 
-export default function Services({ search, setSearch, services, categories }: SearchProps) {
+export default function Services({ search, setSearch, services, categories, setTab, user, setCurrChat }: SearchProps) {
 
     const [shownServices, setShownServices] = useState<Service[]>([]);
     const [providers, setProviders] = useState<Record<string, string>>({});
@@ -49,7 +54,6 @@ export default function Services({ search, setSearch, services, categories }: Se
     async function changeFilter(e: { target: { value: string } }) {
         const newFilter = e.target.value;
         const filter: Service[] = [];
-        //console.log(newFilter);
 
         if (newFilter === "All Services") {
             if (services){
@@ -73,7 +77,25 @@ export default function Services({ search, setSearch, services, categories }: Se
         }
 
         setShownServices(filter);
-        console.log(shownServices);
+    }
+
+    const contactProvider = async (service: Service) => {
+        if (!service.providerId) return;
+        if (service.providerId === user.id){
+            return window.location.reload();
+        }
+
+        const chat: Chat = await getChat([user.id, service.providerId]);
+
+        if (chat){
+            setCurrChat(chat);
+            setTab?.("messages");
+        }
+        else {
+            const c: Chat = await createChat([user.id, service.providerId]);
+            setCurrChat(c);
+            setTab?.("messages");
+        }
     }
 
     void search
@@ -177,7 +199,7 @@ export default function Services({ search, setSearch, services, categories }: Se
                                                     <p>{service.pricing?.unit}</p>
                                                 </div>
 
-                                                <div className="flex justify-start items-center w-fit bg-black text-white px-6 py-2 gap-2 rounded-[10px] cursor-pointer hover:bg-black/80">
+                                                <div onClick={() => contactProvider(service)} className="flex justify-start items-center w-fit bg-black text-white px-6 py-2 gap-2 rounded-[10px] cursor-pointer hover:bg-black/80">
                                                     <MessageCircle/>
                                                     Contact
                                                 </div>
