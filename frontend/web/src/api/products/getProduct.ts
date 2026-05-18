@@ -1,18 +1,13 @@
 import axios from 'axios';
 
-const getProduct = async () => {
+const getProduct = async (id: string) => {
     const token = localStorage.getItem('token');
 
-    const { data } = await axios.get(`/api/products/${token}`, {
+    const { data } = await axios.get(`/api/products/${id}`, {
         headers: { authorization: `Bearer ${token}` }
     });
 
-    const product = data.product;
-    //const category = product.category;
-
-    console.log(product);
-
-    return product;
+    return data.product;
 }
 
 export default getProduct;

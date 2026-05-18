@@ -1,77 +1,91 @@
-from tkinter import Frame, Label, Entry, Button
-from tkinter import LEFT, RIGHT, X, W
+from tkinter import Frame, Label, Entry, Button, Canvas
 
 
 class LoginPage(Frame):
     def __init__(self, parent, controller):
         super().__init__(parent)
         self.controller = controller
+        self.signup_clicked = None
 
-        self.configure(bg="#f0f2f5")
+        self.configure(bg="#0a0e27")
 
-        left_frame = Frame(self, bg="#1e40af", width=350)
-        left_frame.pack(side="left", fill="both", expand=True)
+        canvas = Canvas(self, bg="#0a0e27", highlightthickness=0)
+        canvas.pack(fill="both", expand=True)
 
-        right_frame = Frame(self, bg="white")
-        right_frame.pack(side="right", fill="both", expand=True)
+        canvas.create_rectangle(0, 0, 550, 700, fill="#060b19", outline="")
 
-        left_frame.pack_propagate(False)
+        canvas.create_text(275, 120, text="NEXUS", font=("Montserrat", 42, "bold"),
+                           fill="#00d4ff", anchor="center")
 
-        Label(left_frame, text="Nexus Marketplace", font=("Segoe UI", 28, "bold"),
-              bg="#1e40af", fg="white").pack(anchor="w", padx=40, pady=(60, 5))
+        canvas.create_text(275, 170, text="Marketplace", font=("Montserrat", 24),
+                           fill="#ffffff", anchor="center")
 
-        Label(left_frame, text="Enterprise Platform", font=("Segoe UI", 14),
-              bg="#1e40af", fg="#bfdbfe").pack(anchor="w", padx=40, pady=(0, 50))
+        canvas.create_text(275, 240, text="Connect · Trade · Grow", font=("Inter", 12),
+                           fill="#6b7280", anchor="center")
 
-        Label(left_frame, text="Secure marketplace solution for UCT community",
-              font=("Segoe UI", 12), bg="#1e40af", fg="#e0e7ff", wraplength=250,
-              justify="left").pack(anchor="w", padx=40, pady=(40, 20))
+        features = ["✓ Secure Authentication", "✓ Real-time Analytics", "✓ Student Verified"]
+        y = 300
+        for f in features:
+            canvas.create_text(275, y, text=f, font=("Inter", 11),
+                               fill="#9ca3af", anchor="center")
+            y += 30
 
-        features = "• Secure authentication\n• Role-based access\n• Real-time analytics"
-        Label(left_frame, text=features, font=("Segoe UI", 11),
-              bg="#1e40af", fg="#e0e7ff", justify="left").pack(anchor="w", padx=40)
+        card = Frame(self, bg="#111827", relief="flat")
+        card.place(x=600, y=100, width=420, height=500)
 
-        Label(right_frame, text="Sign in", font=("Segoe UI", 30, "bold"),
-              bg="white", fg="#111827").pack(anchor="w", padx=50, pady=(60, 5))
+        Label(card, text="Sign in", font=("Montserrat", 28, "bold"),
+              bg="#111827", fg="#ffffff").pack(anchor="w", padx=35, pady=(40, 5))
 
-        Label(right_frame, text="Access your Nexus Marketplace account",
-              font=("Segoe UI", 12), bg="white", fg="#6b7280").pack(anchor="w", padx=50, pady=(0, 30))
+        Label(card, text="Welcome back to Nexus", font=("Inter", 12),
+              bg="#111827", fg="#6b7280").pack(anchor="w", padx=35, pady=(0, 30))
 
-        Label(right_frame, text="UCT EMAIL", font=("Segoe UI", 10, "bold"),
-              bg="white", fg="#374151").pack(anchor="w", padx=50, pady=(10, 5))
+        Label(card, text="EMAIL", font=("Inter", 11, "bold"),
+              bg="#111827", fg="#9ca3af").pack(anchor="w", padx=35, pady=(10, 5))
 
-        self.email_entry = Entry(right_frame, font=("Segoe UI", 12),
-                                 bg="white", fg="#111827", relief="solid", bd=1)
-        self.email_entry.pack(fill="x", padx=50, pady=(0, 15), ipady=8)
-        self.email_entry.insert(0, "student@myuct.ac.za")
+        self.email_entry = Entry(card, font=("Inter", 12), bg="#1f2937",
+                                 fg="#ffffff", relief="flat", insertbackground="#00d4ff")
+        self.email_entry.pack(fill="x", padx=35, pady=(0, 20), ipady=10)
 
-        Label(right_frame, text="PASSWORD", font=("Segoe UI", 10, "bold"),
-              bg="white", fg="#374151").pack(anchor="w", padx=50, pady=(5, 5))
+        Label(card, text="PASSWORD", font=("Inter", 11, "bold"),
+              bg="#111827", fg="#9ca3af").pack(anchor="w", padx=35, pady=(5, 5))
 
-        self.password_entry = Entry(right_frame, font=("Segoe UI", 12),
-                                    bg="white", fg="#111827", relief="solid", bd=1, show="•")
-        self.password_entry.pack(fill="x", padx=50, pady=(0, 25), ipady=8)
-        self.password_entry.insert(0, "Enter your password")
+        self.password_entry = Entry(card, font=("Inter", 12), show="•",
+                                    bg="#1f2937", fg="#ffffff", relief="flat", insertbackground="#00d4ff")
+        self.password_entry.pack(fill="x", padx=35, pady=(0, 30), ipady=10)
 
-        self.login_btn = Button(right_frame, text="Sign in", font=("Segoe UI", 12, "bold"),
-                                bg="#3b82f6", fg="white", bd=0, cursor="hand2",
-                                activebackground="#2563eb", activeforeground="white")
-        self.login_btn.pack(fill="x", padx=50, pady=(10, 20), ipady=8)
+        self.login_btn = Button(card, text="Sign In", font=("Inter", 12, "bold"),
+                                bg="#00d4ff", fg="#060b19", bd=0, cursor="hand2",
+                                activebackground="#00b8e6", command=self.login)
+        self.login_btn.pack(fill="x", padx=35, pady=(0, 20), ipady=10)
 
-        separator = Frame(right_frame, height=1, bg="#e5e7eb")
-        separator.pack(fill="x", padx=50, pady=20)
+        separator = Frame(card, height=1, bg="#2a2a2a")
+        separator.pack(fill="x", padx=35, pady=20)
 
-        signup_frame = Frame(right_frame, bg="white")
-        signup_frame.pack(pady=20)
+        signup_frame = Frame(card, bg="#111827")
+        signup_frame.pack(pady=15)
 
-        Label(signup_frame, text="Don't have an account?", font=("Segoe UI", 11),
-              bg="white", fg="#6b7280").pack(side="left")
+        Label(signup_frame, text="New to Nexus?", font=("Inter", 11),
+              bg="#111827", fg="#6b7280").pack(side="left")
 
-        self.signup_link = Label(signup_frame, text="Sign up", font=("Segoe UI", 11, "bold"),
-                                 bg="white", fg="#3b82f6", cursor="hand2")
-        self.signup_link.pack(side="left", padx=(5, 0))
-        self.signup_link.bind("<Button-1>", lambda e: controller.show_frame("SignUpPage"))
+        self.signup_btn = Label(signup_frame, text="Create Account", font=("Inter", 11, "bold"),
+                                bg="#111827", fg="#00d4ff", cursor="hand2")
+        self.signup_btn.pack(side="left", padx=(8, 0))
+        self.signup_btn.bind("<Button-1>", lambda e: self.signup_clicked() if self.signup_clicked else None)
 
-        self.error_label = Label(right_frame, text="", font=("Segoe UI", 10),
-                                 bg="white", fg="#dc2626")
+        self.error_label = Label(card, text="", font=("Inter", 10),
+                                 bg="#111827", fg="#ff3366")
         self.error_label.pack(pady=(10, 0))
+
+    def login(self):
+        email = self.email_entry.get().strip()
+        password = self.password_entry.get().strip()
+
+        if not email or not password:
+            self.error_label.config(text="Please fill in all fields")
+            return
+
+        if "@uct.ac.za" in email and password:
+            self.error_label.config(text="")
+            self.controller.show_frame("HomePage")
+        else:
+            self.error_label.config(text="Invalid email or password")

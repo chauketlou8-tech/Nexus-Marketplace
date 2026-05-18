@@ -9,8 +9,6 @@ const createProduct = async ({ product } : { product: Product }) => {
         headers: { authorization: `Bearer ${token}` }
     });
 
-    console.log(data);
-
     return data.product;
 }
 

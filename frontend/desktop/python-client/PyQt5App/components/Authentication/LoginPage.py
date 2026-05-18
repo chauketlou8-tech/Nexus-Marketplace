@@ -1,6 +1,6 @@
 import sys
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout, QHBoxLayout, QFrame
-from PyQt5.QtCore import Qt, pyqtSignal
+from PyQt5.QtCore import Qt, pyqtSignal, QTimer
 from ...utils.LoginWorker import LoginWorker
 import keyboard
 
@@ -11,6 +11,9 @@ class LoginPage(QWidget):
     def __init__(self):
         super().__init__()
         self.login_worker = None
+        self.error_timer = QTimer()
+        self.error_timer.setSingleShot(True)
+        self.error_timer.timeout.connect(self.clear_message)
         self.applyStyles()
         self.initUI()
 
@@ -209,6 +212,7 @@ class LoginPage(QWidget):
             self.result_label.setText("Please enter email and password")
             self.result_label.setVisible(True)
             self.result_label.setStyleSheet("color: #dc2626; font-size: 13px;")
+            self.error_timer.start(2500)
             return
 
         self.login_button.setEnabled(False)
@@ -240,7 +244,6 @@ class LoginPage(QWidget):
         print(user_data)
 
     def on_login_error(self, error_message):
-        #server not started error
         if error_message == "HTTPConnectionPool(host='localhost', port=3002): Max retries exceeded with url: /api/auth/login (Caused by NewConnectionError(\"HTTPConnection(host='localhost', port=3002): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))":
             error_message = "server error."
 
@@ -252,3 +255,4 @@ class LoginPage(QWidget):
         self.result_label.setVisible(True)
         self.result_label.setStyleSheet("color: #dc2626; font-size: 13px;")
         print("Error: ", error_message)
+        self.error_timer.start(2500)

@@ -1,13 +1,41 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout, QHBoxLayout, QFrame, QScrollArea
-from PyQt5.QtCore import Qt, pyqtSignal
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout, QHBoxLayout, QFrame, \
+    QScrollArea
+from PyQt5.QtCore import Qt, pyqtSignal, QTimer, QThread
+from PyQt5App.api.auth.createUser import CreateUser
+
+
+class SignupWorker(QThread):
+    finished = pyqtSignal(object)
+    error = pyqtSignal(str)
+
+    def __init__(self, name, email, password, year, course):
+        super().__init__()
+        self.name = name
+        self.email = email
+        self.password = password
+        self.year = year
+        self.course = course
+
+    def run(self):
+        try:
+            create_user = CreateUser(self.name, self.email, self.password, self.year)
+            user = create_user.create()
+            self.finished.emit(user)
+        except Exception as e:
+            self.error.emit(str(e))
 
 
 class SignUpPage(QWidget):
     login_clicked = pyqtSignal()
+    signup_successful = pyqtSignal()
 
     def __init__(self):
         super().__init__()
+        self.signup_worker = None
+        self.error_timer = QTimer()
+        self.error_timer.setSingleShot(True)
+        self.error_timer.timeout.connect(self.clear_message)
         self.applyStyles()
         self.initUI()
 
@@ -27,17 +55,17 @@ class SignUpPage(QWidget):
             }
             QScrollBar:vertical {
                 border: none;
-                background: #f0f2f5;
+                background: #e5e7eb;
                 width: 8px;
                 margin: 0px;
             }
             QScrollBar::handle:vertical {
-                background: #cbd5e1;
+                background: #9ca3af;
                 border-radius: 4px;
-                min-height: 20px;
+                min-height: 30px;
             }
             QScrollBar::handle:vertical:hover {
-                background: #94a3b8;
+                background: #6b7280;
             }
         """)
 
@@ -58,7 +86,7 @@ class SignUpPage(QWidget):
         self.subtitle_style = """
             font-size: 14px;
             color: #6b7280;
-            margin-bottom: 24px;
+            margin-bottom: 20px;
             border: none;
         """
 
@@ -99,6 +127,18 @@ class SignUpPage(QWidget):
             }
         """
 
+        self.disabled_button_style = """
+            QPushButton {
+                padding: 10px 16px;
+                font-size: 14px;
+                font-weight: 500;
+                border-radius: 4px;
+                background-color: #9ca3af;
+                color: white;
+                border: none;
+            }
+        """
+
         self.secondary_button_style = """
             QPushButton {
                 padding: 8px 16px;
@@ -112,12 +152,6 @@ class SignUpPage(QWidget):
             QPushButton:hover {
                 background-color: #eff6ff;
             }
-        """
-
-        self.link_style = """
-            color: #3b82f6;
-            font-size: 13px;
-            border: none;
         """
 
     def initUI(self):
@@ -153,6 +187,7 @@ class SignUpPage(QWidget):
         scroll_area = QScrollArea()
         scroll_area.setWidgetResizable(True)
         scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
 
         card = QFrame()
         card.setStyleSheet(self.card_style)
@@ -219,6 +254,11 @@ class SignUpPage(QWidget):
         self.sign_up_button = QPushButton("Sign Up")
         self.sign_up_button.setCursor(Qt.PointingHandCursor)
         self.sign_up_button.setStyleSheet(self.button_style)
+        self.sign_up_button.clicked.connect(self.signup)
+
+        self.result_label = QLabel()
+        self.result_label.setStyleSheet("color: #dc2626; font-size: 12px;")
+        self.result_label.setVisible(False)
 
         line = QFrame()
         line.setFrameShape(QFrame.HLine)
@@ -249,6 +289,7 @@ class SignUpPage(QWidget):
         card_layout.addWidget(password_label)
         card_layout.addWidget(self.password_input)
         card_layout.addWidget(self.sign_up_button)
+        card_layout.addWidget(self.result_label)
         card_layout.addWidget(line)
         card_layout.addStretch()
         card_layout.addLayout(account_row)
@@ -260,3 +301,66 @@ class SignUpPage(QWidget):
         main_layout.addWidget(scroll_area, 65)
 
         self.setLayout(main_layout)
+
+    def clear_message(self):
+        self.result_label.setText("")
+        self.result_label.setVisible(False)
+
+    def signup(self):
+        name = self.name_input.text().strip()
+        email = self.email_input.text().strip()
+        course = self.course_input.text().strip()
+        year = self.year_input.text().strip()
+        password = self.password_input.text().strip()
+
+        if not (name and email and course and year and password):
+            self.result_label.setText("Please enter all the required information")
+            self.result_label.setVisible(True)
+            self.error_timer.start(3000)
+            return
+
+        if "@myuct.ac.za" not in email:
+            self.result_label.setText("Please use a valid UCT email address")
+            self.result_label.setVisible(True)
+            self.error_timer.start(3000)
+            return
+
+        self.sign_up_button.setEnabled(False)
+        self.sign_up_button.setText("Creating account...")
+        self.sign_up_button.setStyleSheet(self.disabled_button_style)
+
+        self.result_label.setVisible(False)
+
+        self.signup_worker = SignupWorker(name, email, password, year, course)
+        self.signup_worker.finished.connect(self.on_signup_success)
+        self.signup_worker.error.connect(self.on_signup_error)
+        self.signup_worker.start()
+
+    def on_signup_success(self, user_data):
+        self.sign_up_button.setEnabled(True)
+        self.sign_up_button.setText("Sign Up")
+        self.sign_up_button.setStyleSheet(self.button_style)
+
+        self.result_label.setText("Account created successfully!")
+        self.result_label.setStyleSheet("color: #10b981; font-size: 13px;")
+        self.result_label.setVisible(True)
+        self.error_timer.start(2000)
+
+        self.signup_successful.emit()
+        print(user_data)
+
+    def on_signup_error(self, error_message):
+        self.sign_up_button.setEnabled(True)
+        self.sign_up_button.setText("Sign Up")
+        self.sign_up_button.setStyleSheet(self.button_style)
+
+        if "409" in error_message or "already exists" in error_message.lower():
+            error_message = "User with this email already exists"
+        elif "Connection" in error_message or "refused" in error_message:
+            error_message = "Server error. Please try again later."
+
+        self.result_label.setText(f"Signup failed: {error_message}")
+        self.result_label.setVisible(True)
+        self.result_label.setStyleSheet("color: #dc2626; font-size: 13px;")
+        self.error_timer.start(3000)
+        print("Error: ", error_message)

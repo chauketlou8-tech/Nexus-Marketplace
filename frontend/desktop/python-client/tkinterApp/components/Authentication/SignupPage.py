@@ -1,5 +1,4 @@
-from tkinter import Frame, Label, Entry, Button, Canvas
-from tkinter import LEFT, RIGHT, X, W, VERTICAL
+from tkinter import Frame, Label, Entry, Button, Canvas, Tk
 from tkinter import ttk
 
 
@@ -7,116 +6,105 @@ class SignUpPage(Frame):
     def __init__(self, parent, controller):
         super().__init__(parent)
         self.controller = controller
+        self.login_clicked = None
 
-        self.configure(bg="#f0f2f5")
+        self.configure(bg="#0a0e27")
 
-        left_frame = Frame(self, bg="#1e40af", width=350)
-        left_frame.pack(side="left", fill="both", expand=True)
+        canvas = Canvas(self, bg="#0a0e27", highlightthickness=0)
+        canvas.pack(fill="both", expand=True)
 
-        right_frame = Frame(self, bg="white")
-        right_frame.pack(side="right", fill="both", expand=True)
+        canvas.create_rectangle(0, 0, 550, 700, fill="#060b19", outline="")
 
-        left_frame.pack_propagate(False)
+        canvas.create_text(275, 100, text="Join the", font=("Montserrat", 36, "bold"),
+                           fill="#ffffff", anchor="center")
 
-        Label(left_frame, text="Nexus Marketplace", font=("Segoe UI", 28, "bold"),
-              bg="#1e40af", fg="white").pack(anchor="w", padx=40, pady=(60, 5))
+        canvas.create_text(275, 145, text="Community", font=("Montserrat", 36, "bold"),
+                           fill="#00d4ff", anchor="center")
 
-        Label(left_frame, text="Join the Community", font=("Segoe UI", 14),
-              bg="#1e40af", fg="#bfdbfe").pack(anchor="w", padx=40, pady=(0, 50))
+        canvas.create_text(275, 210, text="Start your journey with us", font=("Inter", 13),
+                           fill="#6b7280", anchor="center")
 
-        Label(left_frame, text="Create your account to start buying and selling within the UCT community",
-              font=("Segoe UI", 12), bg="#1e40af", fg="#e0e7ff", wraplength=250,
-              justify="left").pack(anchor="w", padx=40, pady=(40, 20))
+        features = ["✓ Verified UCT Students", "✓ Secure Transactions", "✓ 24/7 Support"]
+        y = 270
+        for f in features:
+            canvas.create_text(275, y, text=f, font=("Inter", 11),
+                               fill="#9ca3af", anchor="center")
+            y += 30
 
-        features = "• Verified UCT community\n• Secure transactions\n• Student marketplace"
-        Label(left_frame, text=features, font=("Segoe UI", 11),
-              bg="#1e40af", fg="#e0e7ff", justify="left").pack(anchor="w", padx=40)
+        scroll_canvas = Canvas(self, bg="#111827", highlightthickness=0)
+        scroll_canvas.place(x=600, y=80, width=420, height=580)
 
-        canvas = Canvas(right_frame, bg="white", highlightthickness=0)
-        scrollbar = ttk.Scrollbar(right_frame, orient="vertical", command=canvas.yview)
-        scrollable_frame = Frame(canvas, bg="white")
+        scrollbar = ttk.Scrollbar(self, orient="vertical", command=scroll_canvas.yview)
+        scrollbar.place(x=1005, y=80, height=580)
+        scroll_canvas.configure(yscrollcommand=scrollbar.set)
 
-        scrollable_frame.bind("<Configure>", lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
-        canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
-        canvas.configure(yscrollcommand=scrollbar.set)
+        scrollable = Frame(scroll_canvas, bg="#111827")
+        scroll_canvas.create_window((0, 0), window=scrollable, anchor="nw", width=418)
 
-        Label(scrollable_frame, text="Create an account", font=("Segoe UI", 28, "bold"),
-              bg="white", fg="#111827").pack(anchor="w", padx=50, pady=(40, 5))
+        Label(scrollable, text="Create Account", font=("Montserrat", 24, "bold"),
+              bg="#111827", fg="#ffffff").pack(anchor="w", padx=30, pady=(30, 5))
 
-        Label(scrollable_frame, text="Sign up with your UCT email to get started",
-              font=("Segoe UI", 12), bg="white", fg="#6b7280").pack(anchor="w", padx=50, pady=(0, 30))
+        Label(scrollable, text="Get started in seconds", font=("Inter", 12),
+              bg="#111827", fg="#6b7280").pack(anchor="w", padx=30, pady=(0, 30))
 
-        Label(scrollable_frame, text="FULL NAME", font=("Segoe UI", 10, "bold"),
-              bg="white", fg="#374151").pack(anchor="w", padx=50, pady=(10, 5))
+        fields = [
+            ("Full Name", "Thabo Mokoena"),
+            ("UCT Email", "student@uct.ac.za"),
+            ("Course", "Computer Science"),
+            ("Year", "1st Year"),
+            ("Password", "Create a strong password")
+        ]
 
-        self.name_entry = Entry(scrollable_frame, font=("Segoe UI", 12),
-                                bg="white", fg="#111827", relief="solid", bd=1)
-        self.name_entry.pack(fill="x", padx=50, pady=(0, 15), ipady=8)
-        self.name_entry.insert(0, "Thabo Mokoena")
+        self.entries = {}
 
-        Label(scrollable_frame, text="UCT EMAIL", font=("Segoe UI", 10, "bold"),
-              bg="white", fg="#374151").pack(anchor="w", padx=50, pady=(5, 5))
+        for label, placeholder in fields:
+            Label(scrollable, text=label.upper(), font=("Inter", 10, "bold"),
+                  bg="#111827", fg="#9ca3af").pack(anchor="w", padx=30, pady=(15, 5))
 
-        self.email_entry = Entry(scrollable_frame, font=("Segoe UI", 12),
-                                 bg="white", fg="#111827", relief="solid", bd=1)
-        self.email_entry.pack(fill="x", padx=50, pady=(0, 15), ipady=8)
-        self.email_entry.insert(0, "student@uct.ac.za")
+            entry = Entry(scrollable, font=("Inter", 12), bg="#1f2937",
+                          fg="#ffffff", relief="flat", insertbackground="#00d4ff")
+            entry.pack(fill="x", padx=30, ipady=10)
+            entry.insert(0, placeholder)
 
-        row_frame = Frame(scrollable_frame, bg="white")
-        row_frame.pack(fill="x", padx=50, pady=(0, 15))
+            def on_focus(event, e=entry, p=placeholder):
+                if e.get() == p:
+                    e.delete(0, "end")
+                    if p == "Create a strong password":
+                        e.config(show="•")
 
-        course_frame = Frame(row_frame, bg="white")
-        course_frame.pack(side="left", fill="x", expand=True, padx=(0, 10))
+            entry.bind("<FocusIn>", on_focus)
+            self.entries[label] = entry
 
-        Label(course_frame, text="COURSE", font=("Segoe UI", 10, "bold"),
-              bg="white", fg="#374151").pack(anchor="w", pady=(0, 5))
+        self.signup_btn = Button(scrollable, text="Sign Up", font=("Inter", 12, "bold"),
+                                 bg="#00d4ff", fg="#060b19", bd=0, cursor="hand2",
+                                 activebackground="#00b8e6", command=self.signup)
+        self.signup_btn.pack(fill="x", padx=30, pady=(30, 20), ipady=10)
 
-        self.course_entry = Entry(course_frame, font=("Segoe UI", 12),
-                                  bg="white", fg="#111827", relief="solid", bd=1)
-        self.course_entry.pack(fill="x", ipady=8)
-        self.course_entry.insert(0, "Computer Science")
+        separator = Frame(scrollable, height=1, bg="#2a2a2a")
+        separator.pack(fill="x", padx=30, pady=15)
 
-        year_frame = Frame(row_frame, bg="white")
-        year_frame.pack(side="left", fill="x", expand=True)
-
-        Label(year_frame, text="YEAR", font=("Segoe UI", 10, "bold"),
-              bg="white", fg="#374151").pack(anchor="w", pady=(0, 5))
-
-        self.year_entry = Entry(year_frame, font=("Segoe UI", 12),
-                                bg="white", fg="#111827", relief="solid", bd=1)
-        self.year_entry.pack(fill="x", ipady=8)
-        self.year_entry.insert(0, "1")
-
-        Label(scrollable_frame, text="PASSWORD", font=("Segoe UI", 10, "bold"),
-              bg="white", fg="#374151").pack(anchor="w", padx=50, pady=(5, 5))
-
-        self.password_entry = Entry(scrollable_frame, font=("Segoe UI", 12),
-                                    bg="white", fg="#111827", relief="solid", bd=1, show="•")
-        self.password_entry.pack(fill="x", padx=50, pady=(0, 25), ipady=8)
-        self.password_entry.insert(0, "Create a strong password")
-
-        self.signup_btn = Button(scrollable_frame, text="Sign Up", font=("Segoe UI", 12, "bold"),
-                                 bg="#3b82f6", fg="white", bd=0, cursor="hand2",
-                                 activebackground="#2563eb", activeforeground="white")
-        self.signup_btn.pack(fill="x", padx=50, pady=(10, 20), ipady=8)
-
-        separator = Frame(scrollable_frame, height=1, bg="#e5e7eb")
-        separator.pack(fill="x", padx=50, pady=20)
-
-        login_frame = Frame(scrollable_frame, bg="white")
+        login_frame = Frame(scrollable, bg="#111827")
         login_frame.pack(pady=20)
 
-        Label(login_frame, text="Already have an account?", font=("Segoe UI", 11),
-              bg="white", fg="#6b7280").pack(side="left")
+        Label(login_frame, text="Already have an account?", font=("Inter", 11),
+              bg="#111827", fg="#6b7280").pack(side="left")
 
-        self.login_link = Label(login_frame, text="Sign in", font=("Segoe UI", 11, "bold"),
-                                bg="white", fg="#3b82f6", cursor="hand2")
-        self.login_link.pack(side="left", padx=(5, 0))
-        self.login_link.bind("<Button-1>", lambda e: controller.show_frame("LoginPage"))
+        self.login_btn = Label(login_frame, text="Sign In", font=("Inter", 11, "bold"),
+                               bg="#111827", fg="#00d4ff", cursor="hand2")
+        self.login_btn.pack(side="left", padx=(8, 0))
+        self.login_btn.bind("<Button-1>", lambda e: self.login_clicked() if self.login_clicked else None)
 
-        self.error_label = Label(scrollable_frame, text="", font=("Segoe UI", 10),
-                                 bg="white", fg="#dc2626")
-        self.error_label.pack(pady=(10, 20))
+        self.error_label = Label(scrollable, text="", font=("Inter", 10),
+                                 bg="#111827", fg="#ff3366")
+        self.error_label.pack(pady=(10, 30))
 
-        canvas.pack(side="left", fill="both", expand=True)
-        scrollbar.pack(side="right", fill="y")
+        scrollable.update_idletasks()
+        scroll_canvas.configure(scrollregion=scroll_canvas.bbox("all"))
+
+    def signup(self):
+        email = self.entries["UCT Email"].get().strip()
+        if "@uct.ac.za" in email:
+            self.error_label.config(text="")
+            self.login_clicked()
+        else:
+            self.error_label.config(text="Please use a valid UCT email address")

@@ -30,6 +30,7 @@ class AuthenticationPage(QWidget):
         self.login_page.signup_clicked.connect(self.switch_to_signup)
         self.login_page.login_successful.connect(self.login_successful.emit)
         self.signup_page.login_clicked.connect(self.switch_to_login)
+        self.signup_page.signup_successful.connect(self.login_successful.emit)
 
         self.stacked_widget.addWidget(self.login_page)
         self.stacked_widget.addWidget(self.signup_page)
