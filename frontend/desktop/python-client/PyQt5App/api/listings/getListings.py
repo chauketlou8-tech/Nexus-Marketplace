@@ -4,6 +4,16 @@ from PyQt5App.utils.sessionManager import SessionManager
 
 class GetListings:
     def __init__(self):
-        self.session = SessionManager()
         self.address = address()
-        self.token = self.session.get_token()
+        self.sessionManager = SessionManager()
+        self.token = self.sessionManager.get_token()
+
+    def getListings(self):
+        response = requests.get(
+            f"{self.address}/api/listings",
+            headers={
+                "Authorization": f"{self.token}",
+            }
+        )
+        data = response.json()
+        return data.get("listings", [])

@@ -6,7 +6,7 @@ import keyboard
 
 class LoginPage(QWidget):
     signup_clicked = pyqtSignal()
-    login_successful = pyqtSignal()
+    login_successful = pyqtSignal(object)
 
     def __init__(self):
         super().__init__()
@@ -240,8 +240,7 @@ class LoginPage(QWidget):
         self.login_button.setEnabled(True)
         self.login_button.setText("Sign in")
         self.login_button.setStyleSheet(self.button_style)
-        self.login_successful.emit()
-        print(user_data)
+        self.login_successful.emit(user_data)
 
     def on_login_error(self, error_message):
         if error_message == "HTTPConnectionPool(host='localhost', port=3002): Max retries exceeded with url: /api/auth/login (Caused by NewConnectionError(\"HTTPConnection(host='localhost', port=3002): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))":

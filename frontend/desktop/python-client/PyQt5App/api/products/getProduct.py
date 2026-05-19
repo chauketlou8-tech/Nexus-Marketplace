@@ -1,19 +1,21 @@
 import requests
-from PyQt5App.utils.Adress import address
-from PyQt5App.utils.SessionManager import SessionManager
+from PyQt5App.utils.Address import address
+from PyQt5App.utils.sessionManager import SessionManager
 
 class GetProduct:
-    def __init__(self, id_):
-        self.session = SessionManager()
+    def __init__(self, product_id):
         self.address = address()
-        self.token = self.session.get_token()
-        self.id = id_
+        self.sessionManager = SessionManager()
+        self.token = self.sessionManager.get_token()
+        self.product_id = product_id
 
     def getProduct(self):
         response = requests.get(
-            f"{self.address}/products/{self.id}",
-            headers={"Authorization": f"Bearer {self.token}"},
+            f"{self.address}/api/products/{self.product_id}",
+            headers={
+                "Authorization": f"{self.token}",
+            }
         )
-
         data = response.json()
-        return data["product"]
+        print(data)
+        return data.get("data", {})

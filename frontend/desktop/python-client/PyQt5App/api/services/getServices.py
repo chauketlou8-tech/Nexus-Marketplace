@@ -1,18 +1,19 @@
 import requests
-from PyQt5App.utils.sessionManager import SessionManager
 from PyQt5App.utils.Address import address
+from PyQt5App.utils.sessionManager import SessionManager
 
 class GetServices:
     def __init__(self):
-        self.session = SessionManager()
-        self.token = self.session.get_token()
         self.address = address()
+        self.sessionManager = SessionManager()
+        self.token = self.sessionManager.get_token()
 
-    def getService(self):
+    def getServices(self):
         response = requests.get(
             f"{self.address}/api/services",
-            headers={"Authorization": f"Bearer {self.token}"}
+            headers={
+                "Authorization": f"{self.token}",
+            }
         )
-
         data = response.json()
-        return data["services"]
+        return data.get("services", [])

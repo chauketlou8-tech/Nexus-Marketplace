@@ -41,7 +41,6 @@ const createProduct = asyncHandler(async (req, res, next) => {
         return next(new CustomError("Invalid price", 400));
     }
 
-    // validate category
     const category = await Category.findById(categoryId);
     if (!category) {
         return next(new CustomError("Category doesn't exist", 404));
@@ -73,8 +72,24 @@ const createProduct = asyncHandler(async (req, res, next) => {
     });
 });
 
+const deleteProduct = asyncHandler(async (req, res, next) => {
+    const product = await Products.findById(req.params.id);
+
+    if (!product) {
+        return next(new CustomError("Product not found", 404));
+    }
+
+    await product.deleteOne();
+
+    res.status(200).json({
+        success: true,
+        message: "Product deleted successfully",
+    });
+});
+
 module.exports = {
     getProducts,
     getProduct,
     createProduct,
-}
+    deleteProduct,
+};

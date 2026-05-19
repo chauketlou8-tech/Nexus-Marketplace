@@ -1,6 +1,5 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout, QHBoxLayout, QFrame, \
-    QScrollArea
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout, QHBoxLayout, QFrame, QScrollArea
 from PyQt5.QtCore import Qt, pyqtSignal, QTimer, QThread
 from PyQt5App.api.auth.createUser import CreateUser
 
@@ -28,7 +27,7 @@ class SignupWorker(QThread):
 
 class SignUpPage(QWidget):
     login_clicked = pyqtSignal()
-    signup_successful = pyqtSignal()
+    signup_successful = pyqtSignal(object)
 
     def __init__(self):
         super().__init__()
@@ -346,7 +345,7 @@ class SignUpPage(QWidget):
         self.result_label.setVisible(True)
         self.error_timer.start(2000)
 
-        self.signup_successful.emit()
+        self.signup_successful.emit(user_data)
         print(user_data)
 
     def on_signup_error(self, error_message):
