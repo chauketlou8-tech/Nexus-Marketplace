@@ -1,7 +1,7 @@
-import { BookOpen, MessageCircle, Package, ShieldCheck } from "lucide-react"
-import { useEffect, useState } from "react";
+import { BookOpen, MessageCircle, Package, ShieldCheck, SlidersHorizontal } from "lucide-react"
+import {useEffect, useState} from "react";
 import type {Category, Product, User, Course, Listing, Chat} from "../../../shared/interface.ts";
-import type { setString } from "../../../shared/types.ts";
+import type { setString, setChat } from "../../../shared/types.ts";
 import getCategory from "../../../../api/categories/getCategory.ts";
 import getUser from "../../../../api/user/getUser.ts";
 import getCourse from "../../../../api/courses/getCourse.ts";
@@ -13,11 +13,11 @@ interface Props {
     products?: Product[];
     categories?: Category[];
     courses?: Course[];
-    setTab?: setString;
+    setTab: setString;
     listings?: Listing[];
     user: User;
-    currChat: Chat | null;
-    setCurrChat: (c: Chat) => void;
+    currChat?: Chat;
+    setCurrChat: setChat;
 }
 
 export default function MarketplaceView({ products, categories, courses, setTab, listings, user, setCurrChat, currChat }: Props) {
@@ -191,7 +191,7 @@ export default function MarketplaceView({ products, categories, courses, setTab,
 
     async function contactSeller(item: Product): Promise<void> {
         if (item.sellerId === user.id){
-            return window.location.reload();
+            return window.location.reload();//don't know what to do here so relead
         }
 
         //get the chat if it exists
@@ -200,7 +200,7 @@ export default function MarketplaceView({ products, categories, courses, setTab,
         //check if chat exist
         if (chat) {
             setCurrChat(chat);
-            setTab?.("messages");
+            return setTab?.("messages");
         }
         else {
             //create and get the chat if it doesn't exist
@@ -217,15 +217,19 @@ export default function MarketplaceView({ products, categories, courses, setTab,
 
     return (
         <div className="flex flex-col justify-center items-center w-full p-4">
-            <div className="flex justify-center items-center w-fit gap-2 bg-gray-200 px-1 rounded-[20px] min-w-[600px] h-[42px]">
-                <span onClick={() => setActiveTab?.("textbooks")} className={`flex justify-center items-center gap-2 px-4 py-1.5 rounded-[16px] w-[100%] transition-[.25s] ${activeTab === "textbooks" ? "bg-white" : ""}`}>
-                    <BookOpen className="w-[16px] h-[16px]"/>
-                    Textbooks
-                </span>
-                <span onClick={() => setActiveTab?.("items")} className={`flex justify-center items-center gap-2 px-4 py-1.5 rounded-[16px] w-[100%] transition-[.25s] ${activeTab === "items" ? "bg-white" : ""}`}>
-                    <Package className="w-[16px] h-[16px]"/>
-                    Items
-                </span>
+            <div className="flex justify-between items-center w-full">
+                <div className="flex justify-center items-center w-fit gap-2 bg-gray-400/10 border border-gray-400/10 px-0.5 rounded-[10px] min-w-[300px] h-[42px]">
+                    <span onClick={() => setActiveTab?.("textbooks")} className={`flex justify-center items-center gap-2 px-4 py-1.5 rounded-l-[10px] w-[100%] transition-[.25s] ${activeTab === "textbooks" ? "bg-amber-400 text-black" : ""}`}>
+                        <BookOpen className="w-[16px] h-[16px]"/>
+                        <p className="whitespace-nowrap">Textbooks ({textbooks.length})</p>
+                    </span>
+                        <span onClick={() => setActiveTab?.("items")} className={`flex justify-center items-center gap-2 px-4 py-1.5 rounded-r-[10px] w-[100%] transition-[.25s] ${activeTab === "items" ? "bg-amber-400 text-black" : ""}`}>
+                        <Package className="w-[16px] h-[16px]"/>
+                        <p className="whitespace-nowrap">Items ({items.length})</p>
+                    </span>
+                </div>
+
+                <span className="flex justify-center items-center gap-2 text-[15px] bg-gray-400/10 px-4 py-2 rounded-[8px] border border-gray-200/10 transition-[all .25s] hover:text-gray-200/50"><SlidersHorizontal size={18}/> Filters</span>
             </div>
 
             <div className="flex justify-between items-center w-full p-4">

@@ -85,7 +85,7 @@ export default function SideBar({ tab, setTab, user }: sidebarProps) {
             <div className="flex flex-col items-center gap-2 py-6 px-4 w-full">
                 {
                     tabs.map((t, i) => (
-                        <div key={i} onClick={() => setTab?.(t.tag)} className={`flex justify-between items-center w-full p-4 rounded-[10px] ${t.tag === tab ? "bg-orange-400/10 text-[#ffb84d]" : "bg-none text-white hover:bg-gray-200/5"}`}>
+                        <div key={i} onClick={() => setTab?.(t.tag)} className={`flex justify-between items-center w-full p-4 rounded-[10px] ${t.tag === tab ? "bg-amber-400/10 text-[#ffb84d]" : "bg-none text-white hover:bg-gray-200/5"}`}>
                             <div className="flex justify-start items-center gap-2">
                                 {t.icon}
                                 <p>{t.tab}</p>

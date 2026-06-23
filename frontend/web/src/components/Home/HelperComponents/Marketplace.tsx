@@ -11,7 +11,7 @@ interface SearchProps {
     products?: Product[];
     categories?: Category[];
     courses?: Course[];
-    setTab?: setString
+    setTab: setString
     listings?: Listing[];
     user: User;
     currChat: Chat | null;

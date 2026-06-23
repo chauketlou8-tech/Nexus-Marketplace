@@ -23,7 +23,7 @@ export default function Header({ search, setSearch, user, notifications, setTab 
         <div className="flex justify-start items-center w-[81%] px-4 py-2 gap-5 fixed top-0 left-[19%] h-[80px] bg-black border-b border-gray-200 z-[9999999999] overflow-hidden">
             <SearchBar search={search} setSearch={setSearch} />
 
-            <div className="flex justify-center items-center gap-1 bg-orange-400/10 px-4 py-2 rounded-[10px]" onClick={() => navigate("/listItem")}>
+            <div className="flex justify-center items-center gap-1 bg-orange-400/10 border border-amber-300/10 px-4 py-2 rounded-[10px]" onClick={() => navigate("/listItem")}>
                 <Plus width={16} height={16} className="text-orange-300"/>
                 <p className="text-orange-300 font-[500] text-[14px]">Add item</p>
             </div>

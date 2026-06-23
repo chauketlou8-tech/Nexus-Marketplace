@@ -19,7 +19,7 @@ function App() {
           <Route path="/" element={< Authentication setCurrUser={setCurrUser} user={currUser}/> } />
           <Route path="/Home" element={ <Home user={currUser} /> } />
           <Route path="/listItem" element={ <Listing/> } />
-          <Route path={`/user/profile/id=${currUser.id}`} element={ <Profile/> } />
+          <Route path={`/user/profile/id=${currUser?.id}`} element={ <Profile/> } />
       </Routes>
   )
 }
