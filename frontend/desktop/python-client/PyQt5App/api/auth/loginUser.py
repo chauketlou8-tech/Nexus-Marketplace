@@ -11,7 +11,7 @@ class LoginUser:
     def login(self):
         response = requests.post(
             f"{self.addr}/api/auth/login",
-            json={"email": self.email, "password": self.password},
+            json={"pythonEmail": self.email, "password": self.password},
             headers={"Content-Type": "application/json"}
         )
 

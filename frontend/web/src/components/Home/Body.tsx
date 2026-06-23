@@ -2,11 +2,11 @@ import Marketplace from "./HelperComponents/Marketplace.tsx";
 import Services from "./HelperComponents/Services.tsx";
 import Messages from "./HelperComponents/Messages.tsx";
 import Dashboard from "./HelperComponents/DashBoard.tsx";
-import type { setString, setArray } from "../shared/Types/Types.ts";
-import type { Product, Category, Course, Service, Chat, Listing, User } from "../shared/Types/interface.ts";
+import Notifications from "./HelperComponents/Notifications.tsx";
+import Settings from "./HelperComponents/Settings.tsx";
+import type { setString, setArray, PageKey } from "../shared/types.ts";
+import type { Product, Category, Course, Service, Chat, Listing, User } from "../shared/interface.ts";
 import type { ReactElement } from "react";
-
-type PageKey = "marketplace" | "services" | "messages" | "dashboard";
 
 interface BodyProps {
     tab: string,
@@ -36,6 +36,7 @@ export default function Body({ tab, search, setSearch, products, serviceCategori
                                   courses={courses}
                                   setTab={setTab}
                                   listings={listings}
+                                  //@ts-ignore
                                   user={user}
                                   currChat={currChat}
                                   setCurrChat={setCurrChat}
@@ -55,7 +56,15 @@ export default function Body({ tab, search, setSearch, products, serviceCategori
                             setCurrChat={setCurrChat}
         />,
         dashboard: <Dashboard/>,
+        notifications: <Notifications/>,
+        settings: <Settings/>,
     };
+    void pages;
+    void tab;
 
-    return pages[tab as PageKey];
+    return (
+        <div className="flex flex-col items-center w-[81%] bg-black fixed top-[80px] bottom-0 left-[19%] border-l-1 border-l-gray-200 overflow-y-auto scroll-hide">
+            {pages[tab as PageKey]}
+        </div>
+    )
 }

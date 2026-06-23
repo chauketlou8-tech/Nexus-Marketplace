@@ -5,9 +5,9 @@
     font-family: 'Poppins', sans-serif;
 }
 
-/*body{
+body{
     overflow: hidden;
-}*/
+}
 
 @layer utilities {
     .scroll-hide::-webkit-scrollbar {

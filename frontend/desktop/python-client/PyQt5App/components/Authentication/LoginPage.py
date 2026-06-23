@@ -209,7 +209,7 @@ class LoginPage(QWidget):
         self.password_input.clear()
 
         if not email or not password:
-            self.result_label.setText("Please enter email and password")
+            self.result_label.setText("Please enter pythonEmail and password")
             self.result_label.setVisible(True)
             self.result_label.setStyleSheet("color: #dc2626; font-size: 13px;")
             self.error_timer.start(2500)

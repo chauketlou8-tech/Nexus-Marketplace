@@ -1,7 +1,7 @@
 import { BookOpen, MessageCircle, Package, ShieldCheck } from "lucide-react"
 import { useEffect, useState } from "react";
-import type {Category, Product, User, Course, Listing, Chat} from "../../../shared/Types/interface.ts";
-import type { setString } from "../../../shared/Types/Types.ts";
+import type {Category, Product, User, Course, Listing, Chat} from "../../../shared/interface.ts";
+import type { setString } from "../../../shared/types.ts";
 import getCategory from "../../../../api/categories/getCategory.ts";
 import getUser from "../../../../api/user/getUser.ts";
 import getCourse from "../../../../api/courses/getCourse.ts";

@@ -15,7 +15,7 @@ class CreateUser:
             f"{self.addr}/auth/register",
             json={
                 "name": self.name,
-                "email": self.email,
+                "pythonEmail": self.email,
                 "password": self.password,
                 "year": self.year
             }

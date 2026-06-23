@@ -1,10 +1,10 @@
-import axios from 'axios';
+import axiosInstance from "../../utils/AxiosInstance.ts"
 
 const getChat = async (participants: number[]) => {
     const token = localStorage.getItem('token');
 
     try{
-        const { data } = await axios.get(`/api/chats/chat?participants=${participants}`, {
+        const { data } = await axiosInstance.get(`/api/chats/chat?participants=${participants}`, {
             headers: {
                 Authorization: `Bearer ${token}`,
             }

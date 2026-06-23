@@ -1,5 +1,5 @@
-import type { User } from "../../shared/Types/interface.ts"
-import type { setBool } from "../../shared/Types/Types.ts";
+import type { User } from "../../shared/interface.ts"
+import type { setBool } from "../../shared/types.ts";
 import { X } from "lucide-react"
 
 

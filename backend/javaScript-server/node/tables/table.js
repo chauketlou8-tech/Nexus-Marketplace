@@ -1,3 +1,5 @@
+require('dotenv').config({ path: require('path').join(__dirname, '../.env') });
+
 // function entirely for creating the postgresql tables
 const pool = require("../utils/postgreConnection");
 
@@ -25,6 +27,9 @@ const createPools = async () => {
 
         // reviews summary table
         await pool.query(`create table if not exists Reviews(id serial primary key, user_id integer not null references Users(id), avg_rating real check(avg_rating >= 0 and avg_rating <= 5), total_reviews integer default 0)`);
+
+        //notifications table
+        await pool.query(`create table if not exists Notifications(id serial primary key , user_id integer not null references Users(id), title text not null, message text not null, is_read boolean default false, created_at timestamp default current_timestamp)`)
 
         // trigger for last_updated
         await pool.query(`

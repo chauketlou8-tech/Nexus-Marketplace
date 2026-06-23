@@ -39,7 +39,6 @@ const getUser = asyncHandler(async (req, res, next) => {
 // logout
 const logout = asyncHandler(async (req, res) => {
     const client = await redisClient;
-
     const userId = req.params.id;
 
     await client.del(`online:${userId}`);

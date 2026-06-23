@@ -88,4 +88,4 @@ class LoginPage(Frame):
             self.error_label.config(text="")
             self.controller.show_frame("HomePage")
         else:
-            self.error_label.config(text="Invalid email or password")
+            self.error_label.config(text="Invalid pythonEmail or password")

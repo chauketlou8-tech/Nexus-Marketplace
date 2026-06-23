@@ -76,7 +76,7 @@ marketplace/
 
 ## 📸 Screenshots
 
-> *(Will add screenshots here once UI is ready)*
+> *<img src="" alt="(Will add screenshots here once UI is ready)">*
 
 ---
 
@@ -85,7 +85,7 @@ marketplace/
 ### 1️⃣ Clone Repo
 
 ```bash id="p9m4ks"
-git https://github.com/chauketlou8-tech/Nexus-Marketplace.git
+git clone https://github.com/chauketlou8-tech/Nexus-Marketplace.git NexusMarketplace
 cd marketplace
 ```
 

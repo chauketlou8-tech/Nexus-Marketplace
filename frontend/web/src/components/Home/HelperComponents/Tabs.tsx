@@ -1,7 +1,7 @@
 import { ShoppingBag, GraduationCap, MessageCircle, ChartColumn } from "lucide-react"
-import type { setString } from "../../shared/Types/Types.ts";
+import type { setString } from "../../shared/types.ts";
 import Profile from "./Profile.tsx";
-import type { User } from "../../shared/Types/interface.ts";
+import type { User } from "../../shared/interface.ts";
 
 interface TabsProps {
     tab?: string

@@ -1,9 +1,9 @@
-import axios from "axios";
+import axiosInstance from "../../utils/AxiosInstance.ts"
 
 const getOnlineUsers = async () => {
     const token = localStorage.getItem("token");
 
-    const { data } = await axios.get("/api/users/online", {
+    const { data } = await axiosInstance.get("/api/users/online", {
         headers: {
             Authorization: `Bearer ${token}`
         }

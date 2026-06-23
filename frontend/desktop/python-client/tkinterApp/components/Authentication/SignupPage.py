@@ -107,4 +107,4 @@ class SignUpPage(Frame):
             self.error_label.config(text="")
             self.login_clicked()
         else:
-            self.error_label.config(text="Please use a valid UCT email address")
+            self.error_label.config(text="Please use a valid UCT pythonEmail address")

@@ -1,6 +1,6 @@
 import { MessageCircle, Users, ShieldCheck, Clock, Send, Lightbulb, Ban } from "lucide-react";
-import type { Chat, User, Message } from "../../shared/Types/interface.ts"
-import type { setArray } from "../../shared/Types/Types.ts";
+import type { Chat, User, Message } from "../../shared/interface.ts"
+import type { setArray } from "../../shared/types.ts";
 import formatInit from "../../../utils/formatInit.ts"
 import getUser from "../../../api/user/getUser.ts";
 import { useState, useEffect, useRef } from "react";

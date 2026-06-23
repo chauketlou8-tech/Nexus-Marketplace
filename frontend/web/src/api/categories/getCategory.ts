@@ -1,7 +1,7 @@
-import axios from "axios";
+import axiosInstance from "../../utils/AxiosInstance.ts"
 
 const getCategory = async (categoryId: string) => {
-    const { data } = await axios.get(`/api/category/${categoryId}`);
+    const { data } = await axiosInstance.get(`/api/category/${categoryId}`);
     return data.slug;
 }
 

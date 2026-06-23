@@ -1,8 +1,9 @@
 import RecommendationsPage from "./Marketplace/Recommendations.tsx";
 import MarketplaceView from "./Marketplace/MarketplaceView.tsx";
-import type {Category, Product, Course, Listing, Chat} from "../../shared/Types/interface.ts";
-import type { setString } from "../../shared/Types/Types.ts";
-import type {User} from "../../shared/Types/User.ts";
+import type {Category, Product, Course, Listing, Chat} from "../../shared/interface.ts";
+import type { setString } from "../../shared/types.ts";
+import type {User} from "../../shared/User.ts";
+import { useState } from "react";
 
 interface SearchProps {
     search?: string;
@@ -21,9 +22,11 @@ export default function Marketplace({ search, setSearch, products, categories, c
     void search
     void setSearch
 
+    const [dismissed, setDismissed] = useState<boolean>(false);
+
     return (
         <div className="flex flex-col justify-center items-center w-full p-4">
-            <RecommendationsPage/>
+            <RecommendationsPage dismissed={dismissed} setDismissed={setDismissed} />
             <MarketplaceView products={products}
                              categories={categories}
                              courses={courses}

@@ -1,13 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="NexusMarketplace@localhost" uuid="004a0879-5563-47c2-8828-09017721c8a0">
-      <driver-ref>postgresql</driver-ref>
-      <synchronize>true</synchronize>
-      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
-      <jdbc-url>jdbc:postgresql://localhost:3001/NexusMarketplace</jdbc-url>
-      <working-dir>$ProjectFileDir$</working-dir>
-    </data-source>
     <data-source source="LOCAL" name="NexusMarketplace@cluster0.h6kymkq.mongodb.net" uuid="8dee5b8e-bf40-4606-8d9c-98449590a269">
       <driver-ref>mongo.4</driver-ref>
       <synchronize>true</synchronize>
@@ -15,11 +8,11 @@
       <jdbc-url>mongodb+srv://cluster0.h6kymkq.mongodb.net/NexusMarketplace</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
-    <data-source source="LOCAL" name="Redis" uuid="0db03092-470a-444b-a599-15435b77d45f">
-      <driver-ref>redis</driver-ref>
+    <data-source source="LOCAL" name="NexusMarketplace@localhost" uuid="e43c4f97-891f-4995-aecd-5191adc9307f">
+      <driver-ref>postgresql</driver-ref>
       <synchronize>true</synchronize>
-      <jdbc-driver>jdbc.RedisDriver</jdbc-driver>
-      <jdbc-url>redis://default:TemaSecondary0909%40@redis-17634.c245.us-east-1-3.ec2.cloud.redislabs.com:17634</jdbc-url>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql://localhost:3001/NexusMarketplace</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
   </component>

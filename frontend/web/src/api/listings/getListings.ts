@@ -1,9 +1,9 @@
-import axios from "axios";
+import axiosInstance from "../../utils/AxiosInstance.ts"
 
 const getListings = async () => {
     const token = localStorage.getItem("token");
 
-    const { data } = await axios.get("/api/listings", {
+    const { data } = await axiosInstance.get("/api/listings", {
         headers: {
             Authorization: `Bearer ${token}`,
         }

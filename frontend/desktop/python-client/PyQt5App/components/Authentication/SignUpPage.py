@@ -197,7 +197,7 @@ class SignUpPage(QWidget):
         self.join_label = QLabel("Create an account")
         self.join_label.setStyleSheet(self.title_style)
 
-        self.create_label = QLabel("Sign up with your UCT email to get started")
+        self.create_label = QLabel("Sign up with your UCT pythonEmail to get started")
         self.create_label.setStyleSheet(self.subtitle_style)
 
         name_label = QLabel("FULL NAME")
@@ -319,7 +319,7 @@ class SignUpPage(QWidget):
             return
 
         if "@myuct.ac.za" not in email:
-            self.result_label.setText("Please use a valid UCT email address")
+            self.result_label.setText("Please use a valid UCT pythonEmail address")
             self.result_label.setVisible(True)
             self.error_timer.start(3000)
             return
@@ -354,7 +354,7 @@ class SignUpPage(QWidget):
         self.sign_up_button.setStyleSheet(self.button_style)
 
         if "409" in error_message or "already exists" in error_message.lower():
-            error_message = "User with this email already exists"
+            error_message = "User with this pythonEmail already exists"
         elif "Connection" in error_message or "refused" in error_message:
             error_message = "Server error. Please try again later."
 

@@ -1,13 +1,15 @@
 import Header from "../components/Home/Header.tsx";
 import Body from "../components/Home/Body.tsx";
+import SideBar from "../components/Home/SideBar.tsx";
 import { useState, useEffect } from "react";
-import type { Product, Category, Course, Service, Chat, Listing, User } from "../components/shared/Types/interface.ts";
+import type { Product, Category, Course, Service, Chat, Listing, User, Notification } from "../components/shared/interface.ts";
 import getProducts from "../api/products/getProducts.ts";
 import getCategories from "../api/categories/getCategories.ts";
 import getCourses from "../api/courses/getCourses.ts";
 import getServices from "../api/services/getServices.ts";
 import getChats from "../api/chats/getChats.ts";
 import getListings from "../api/listings/getListings.ts";
+import getNotifications from "../api/notifications/getNotifications.ts";
 
 export default function Home({ user }: { user : User }) {
 
@@ -20,6 +22,7 @@ export default function Home({ user }: { user : User }) {
     const [services, setServices] = useState<Service[]>([]);
     const [chats, setChats] = useState<Chat[]>([]);
     const [listings, setListings] = useState<Listing[]>([]);
+    const [notifications, setNotifications] = useState<Notification[]>([]);
 
     const [productCategories, setProductCategories] = useState<Category[]>([]);
     const [serviceCategories, setServiceCategories] = useState<Category[]>([]);
@@ -107,17 +110,28 @@ export default function Home({ user }: { user : User }) {
             }
         }
 
+        const fetchNotifications = async () => {
+            try {
+                const allNotifications: Notification[] = await getNotifications(user?.id);
+                setNotifications(allNotifications);
+            }
+            catch (e) {
+                console.log(e)
+            }
+        }
+
         void fetchProducts();
         void fetchCategories();
         void fetchCourses();
         void fetchServices();
         void fetchChats();
-        void fetchListings()
+        void fetchListings();
+        void fetchNotifications();
     }, []);
 
     return (
-        <div className="flex flex-col items-center justify-center text-gray-500 gap-2 bg-blue-50/30 h-full">
-            <Header tab={tab} setTab={setTab} search={search} setSearch={setSearch} user={user} />
+        <div className="flex flex-col items-center justify-center text-gray-500 gap-2 bg-blue-50/30 h-screen">
+            <Header tab={tab} setTab={setTab} search={search} setSearch={setSearch} user={user} notifications={notifications} />
             <Body tab={tab}
                   setTab={setTab}
                   search={search}
@@ -134,6 +148,7 @@ export default function Home({ user }: { user : User }) {
                   currChat={currChat}
                   setCurrChat={setCurrChat}
             />
+            <SideBar tab={tab} setTab={setTab} user={user} />
         </div>
     );
 }

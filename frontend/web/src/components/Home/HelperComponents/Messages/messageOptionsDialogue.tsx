@@ -1,5 +1,5 @@
 import { Trash, Reply, Copy, ThumbsDown, Pin, Check } from "lucide-react";
-import type { setBool, setString } from "../../../shared/Types/Types.ts";
+import type { setBool, setString } from "../../../shared/types.ts";
 
 interface props {
     isOptionsOpen: boolean

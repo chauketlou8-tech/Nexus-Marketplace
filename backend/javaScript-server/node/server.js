@@ -4,7 +4,7 @@ const connectMongoDB = require("./db/connectMongoDB");
 const connectPostgreDB = require("./db/connectPostgreDB");
 const connectRedis = require("./db/connectRedisDB");
 
-const port = process.env.PORT || 3001;
+const port = process.env.PORT || 3002;
 
 //databases url
 const mongoUrl = process.env.MONGODB_URI;

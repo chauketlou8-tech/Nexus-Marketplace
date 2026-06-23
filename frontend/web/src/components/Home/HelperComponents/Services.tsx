@@ -1,6 +1,6 @@
 import {Cog, Clock, MessageCircle, ShieldCheck} from "lucide-react"
-import type { setString } from "../../shared/Types/Types.ts";
-import type { Service, Category, User, Chat } from "../../shared/Types/interface.ts";
+import type { setString } from "../../shared/types.ts";
+import type { Service, Category, User, Chat } from "../../shared/interface.ts";
 import { useState, useEffect } from "react";
 import getCategory from "../../../api/categories/getCategory.ts";
 import getUser from "../../../api/user/getUser.ts";

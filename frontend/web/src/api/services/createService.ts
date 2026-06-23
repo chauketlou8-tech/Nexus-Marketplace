@@ -1,10 +1,10 @@
-import axios from "axios";
-import type { Service } from "../../components/shared/Types/interface.ts";
+import axiosInstance from "../../utils/AxiosInstance.ts"
+import type { Service } from "../../components/shared/interface.ts";
 
 const createService = async ({ service } : { service: Service }) => {
     const token = localStorage.getItem('token');
 
-    const { data } = await axios.post("/api/services", service, {
+    const { data } = await axiosInstance.post("/api/services", service, {
         headers: {
             Authorization: `Bearer ${token}`
         }

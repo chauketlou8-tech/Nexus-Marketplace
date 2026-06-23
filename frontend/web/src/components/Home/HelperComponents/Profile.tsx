@@ -1,4 +1,4 @@
-import type { User as U } from "../../shared/Types/interface.ts";
+import type { User as U } from "../../shared/interface.ts";
 import { ShieldCheck, User } from "lucide-react"
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";

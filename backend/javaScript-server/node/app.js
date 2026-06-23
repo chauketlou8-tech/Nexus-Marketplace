@@ -18,6 +18,7 @@ const reviewsRoutes = require("./routes/Reviews.routes");
 const summaryRoutes = require("./routes/ReviewsSummary.routes");
 const categoryRoutes = require("./routes/Categories.routes");
 const listingsRoutes = require("./routes/Listings.routes");
+const notificationsRoutes = require("./routes/Notifications.routes");
 
 //middleware
 app.use(express.json());
@@ -38,6 +39,7 @@ app.use('/api/reviews', reviewsRoutes);
 app.use('/api/summary', summaryRoutes);
 app.use('/api/category', categoryRoutes);
 app.use('/api/listings', listingsRoutes);
+app.use('/api/notifications', notificationsRoutes);
 
 //error handler
 app.use(errorHandler);

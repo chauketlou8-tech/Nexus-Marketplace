@@ -1,12 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourcePerFileMappings">
-    <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/004a0879-5563-47c2-8828-09017721c8a0/console.sql" value="004a0879-5563-47c2-8828-09017721c8a0" />
-    <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/004a0879-5563-47c2-8828-09017721c8a0/console_1.sql" value="004a0879-5563-47c2-8828-09017721c8a0" />
-    <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/004a0879-5563-47c2-8828-09017721c8a0/console_2.sql" value="004a0879-5563-47c2-8828-09017721c8a0" />
-    <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/004a0879-5563-47c2-8828-09017721c8a0/console_3.sql" value="004a0879-5563-47c2-8828-09017721c8a0" />
-    <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/004a0879-5563-47c2-8828-09017721c8a0/console_4.sql" value="004a0879-5563-47c2-8828-09017721c8a0" />
-    <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/004a0879-5563-47c2-8828-09017721c8a0/console_5.sql" value="004a0879-5563-47c2-8828-09017721c8a0" />
     <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/8dee5b8e-bf40-4606-8d9c-98449590a269/console.js" value="8dee5b8e-bf40-4606-8d9c-98449590a269" />
     <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/8dee5b8e-bf40-4606-8d9c-98449590a269/console_1.js" value="8dee5b8e-bf40-4606-8d9c-98449590a269" />
     <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/8dee5b8e-bf40-4606-8d9c-98449590a269/console_10.js" value="8dee5b8e-bf40-4606-8d9c-98449590a269" />
@@ -22,5 +16,7 @@
     <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/8dee5b8e-bf40-4606-8d9c-98449590a269/console_7.js" value="8dee5b8e-bf40-4606-8d9c-98449590a269" />
     <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/8dee5b8e-bf40-4606-8d9c-98449590a269/console_8.js" value="8dee5b8e-bf40-4606-8d9c-98449590a269" />
     <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/8dee5b8e-bf40-4606-8d9c-98449590a269/console_9.js" value="8dee5b8e-bf40-4606-8d9c-98449590a269" />
+    <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/e43c4f97-891f-4995-aecd-5191adc9307f/console.sql" value="e43c4f97-891f-4995-aecd-5191adc9307f" />
+    <file url="file://$PROJECT_DIR$/backend/javaScript-server/node/tables/table.js" value="e43c4f97-891f-4995-aecd-5191adc9307f" />
   </component>
 </project>

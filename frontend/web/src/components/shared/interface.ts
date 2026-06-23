@@ -5,8 +5,6 @@ export interface User {
     role: string;
     year: number;
     is_verified: boolean;
-    created_at: Date;
-    last_updated: Date;
 }
 
 export interface Product {
@@ -89,4 +87,13 @@ export interface Message {
     senderId?: number;
     createdAt?: Date;
     updatedAt: Date;
+}
+
+export interface Notification {
+    id: number;
+    user_id: number;
+    title: string;
+    message: string;
+    is_read: boolean;
+    created_at: Date;
 }

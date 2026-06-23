@@ -1,9 +1,9 @@
-import axios from "axios";
+import axiosInstance from "../../utils/AxiosInstance.ts"
 
 const createChat = async (participants: number[]) => {
     const token = localStorage.getItem("token");
     try{
-        const { data } = await axios.post("/api/chats", { participants }, {
+        const { data } = await axiosInstance.post("/api/chats", { participants }, {
             headers: {
                 Authorization: `Bearer ${token}`
             }

@@ -2,7 +2,9 @@ import { Routes, Route } from 'react-router-dom';
 import { useState } from "react";
 import Authentication from "./pages/Authentication.tsx";
 import Home from "./pages/Home.tsx";
-import type { User } from "./components/shared/Types/User.ts";
+import Listing from "./pages/Listing.tsx";
+import Profile from "./pages/Profile.tsx";
+import type { User } from "./components/shared/User.ts";
 
 function App() {
 
@@ -13,10 +15,11 @@ function App() {
 
     return (
       <Routes>
-          <Route path="/" element={< Authentication setCurrUser={setCurrUser} user={currUser}/> } />
-
           {/*@ts-ignore*/}
+          <Route path="/" element={< Authentication setCurrUser={setCurrUser} user={currUser}/> } />
           <Route path="/Home" element={ <Home user={currUser} /> } />
+          <Route path="/listItem" element={ <Listing/> } />
+          <Route path={`/user/profile/id=${currUser.id}`} element={ <Profile/> } />
       </Routes>
   )
 }
