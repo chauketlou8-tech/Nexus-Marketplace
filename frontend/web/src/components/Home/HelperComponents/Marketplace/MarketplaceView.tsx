@@ -1,6 +1,6 @@
-import { BookOpen, MessageCircle, Package, ShieldCheck, SlidersHorizontal } from "lucide-react"
-import {useEffect, useState} from "react";
-import type {Category, Product, User, Course, Listing, Chat} from "../../../shared/interface.ts";
+import { BookOpen, MessageCircle, Package, ShieldCheck, SlidersHorizontal, ArrowUp, ArrowDown, X } from "lucide-react"
+import { useEffect, useState } from "react";
+import type { Category, Product, User, Course, Listing, Chat } from "../../../shared/interface.ts";
 import type { setString, setChat } from "../../../shared/types.ts";
 import getCategory from "../../../../api/categories/getCategory.ts";
 import getUser from "../../../../api/user/getUser.ts";
@@ -30,13 +30,44 @@ export default function MarketplaceView({ products, categories, courses, setTab,
     const [course, setCourse] = useState<string>("All Courses");
     const [category, setCategory] = useState<string>("All Categories");
     const [sort, setSort] = useState<string>("recently listed");
-    const [Categories, setCategories] = useState<Category[]>([]);
+    const [itemCategories, setItemCategories] = useState<Category[]>([]);
 
     const [allTextbooks, setAllTextbooks] = useState<Product[]>([]);
     const [allItems, setAllItems] = useState<Product[]>([]);
 
     const colors : string[] = ["blue", "green", "purple", "red", "orange", "yellow"];
     const [color] = useState<string>(colors[Math.floor(Math.random() * colors.length)]);
+
+    const [isShowFilters, setShowFilters] = useState<boolean>(false);
+    const [currFilterIdx, setCurrFilterIdx] = useState<number>(0);
+
+    const filters = [
+        {
+            name: "Newest",
+            icon: "",
+            sort: "recently listed",
+        },
+        {
+            name: "Price",
+            icon: <ArrowUp size={16}/>,
+            sort: "low to high",
+        },
+        {
+            name: "Price",
+            icon: <ArrowDown size={16}/>,
+            sort: "high to low",
+        },
+        {
+            name: "Best Deals",
+            icon: "",
+            sort: "best deals",
+        },
+        {
+            name: "Top Rated",
+            icon: "",
+            sort: "top rated",
+        }
+    ]
 
     useEffect(() => {
         const sortProducts = async () => {
@@ -75,15 +106,14 @@ export default function MarketplaceView({ products, categories, courses, setTab,
 
         const sortCategories = () => {
             const itemsCategories: Category[] = categories?.filter(category => category.slug !== "books") ?? [];
-            setCategories(itemsCategories);
+            setItemCategories(itemsCategories);
         }
 
         void sortProducts();
         void sortCategories();
     }, [products]);
 
-    async function changeCurrentCourseFilter(e: { target: { value: string } }) {
-        const newCourse: string = e.target.value;
+    async function changeCourseFilter(newCourse: string) {
         setCourse(newCourse);
 
         if (newCourse === "All Courses") {
@@ -94,10 +124,9 @@ export default function MarketplaceView({ products, categories, courses, setTab,
 
         for (const book of allTextbooks) {
             for (const id of book.courseIds) {
-                const c = await getCourse(id);
-                if (c.name === newCourse) {
+                const c: Course = await getCourse(id);
+                if (c.code === newCourse) {
                     filtered.push(book);
-                    break;
                 }
             }
         }
@@ -105,9 +134,7 @@ export default function MarketplaceView({ products, categories, courses, setTab,
         setTextbooks(filtered);
     }
 
-    async function changeCategoryFilter(e: { target: { value: string } }) {
-        console.log(e.target);
-        const newCategory: string = e.target.value;
+    async function changeCategoryFilter(newCategory: string) {
         setCategory(newCategory);
 
         if (newCategory === "All Categories") {
@@ -117,27 +144,20 @@ export default function MarketplaceView({ products, categories, courses, setTab,
         const filtered: Product[] = [];
 
         for (const item of allItems) {
-            if(!item.courseIds.length) continue;
-
-            for (const id of item.courseIds) {
-                const c = await getCourse(id);
-
-                if (c.name === newCategory) {
-                    filtered.push(item);
-                    break;
-                }
+            const category: string = await getCategory(item.categoryId);
+            if (category === newCategory) {
+                filtered.push(item);
             }
         }
 
         setItems(filtered);
     }
 
-    async function changeSortFilter(e: { target: { value: string } }) {
-        const newSort: string = e.target.value;
+    async function changeSortFilter(newSort: string) {
         setSort?.(newSort);
 
         if (activeTab === "textbooks") {
-            if (newSort === "Recently Listed") {
+            if (newSort === "recently listed") {
                 const sorted = [...textbooks].sort((a, b) => {
                     const listingA = listings?.find(l => l.itemId === a._id);
                     const listingB = listings?.find(l => l.itemId === b._id);
@@ -149,11 +169,11 @@ export default function MarketplaceView({ products, categories, courses, setTab,
                 setTextbooks(sorted);
             }
 
-            else if (newSort === "Price: Low to High") {
+            else if (newSort === "low to high") {
                 const sorted = [...textbooks].sort((a, b) => a.price - b.price);
                 setTextbooks(sorted);
             }
-            else if (newSort === "Price: High to Low") {
+            else if (newSort === "high to low") {
                 const sorted = [...textbooks].sort((a, b) => b.price - a.price);
                 setTextbooks(sorted);
             }
@@ -163,8 +183,8 @@ export default function MarketplaceView({ products, categories, courses, setTab,
         }
 
         else if (activeTab === "items") {
-            if (newSort === "Recently Listed") {
-                const sorted = [...textbooks].sort((a, b) => {
+            if (newSort === "recently listed") {
+                const sorted = [...items].sort((a, b) => {
                     const listingA = listings?.find(l => l.itemId === a._id);
                     const listingB = listings?.find(l => l.itemId === b._id);
 
@@ -175,12 +195,12 @@ export default function MarketplaceView({ products, categories, courses, setTab,
                 setItems(sorted);
             }
 
-            else if (newSort === "Price: Low to High") {
-                const sorted = [...textbooks].sort((a, b) => a.price - b.price);
+            else if (newSort === "low to high") {
+                const sorted = [...items].sort((a, b) => a.price - b.price);
                 setItems(sorted);
             }
-            else if (newSort === "Price: High to Low") {
-                const sorted = [...textbooks].sort((a, b) => b.price - a.price);
+            else if (newSort === "high to low") {
+                const sorted = [...items].sort((a, b) => b.price - a.price);
                 setItems(sorted);
             }
             else{
@@ -189,7 +209,7 @@ export default function MarketplaceView({ products, categories, courses, setTab,
         }
     }
 
-    async function contactSeller(item: Product): Promise<void> {
+    async function contactSeller(item: Product) {
         if (item.sellerId === user.id){
             return window.location.reload();//don't know what to do here so relead
         }
@@ -216,9 +236,10 @@ export default function MarketplaceView({ products, categories, courses, setTab,
     void currChat
 
     return (
-        <div className="flex flex-col justify-center items-center w-full p-4">
-            <div className="flex justify-between items-center w-full">
-                <div className="flex justify-center items-center w-fit gap-2 bg-gray-400/10 border border-gray-400/10 px-0.5 rounded-[10px] min-w-[300px] h-[42px]">
+        <div className="flex flex-col justify-center items-center w-full p-4 gap-6">
+            <div className="flex flex-col justify-center items-center w-full gap-4">
+                <div className="flex justify-between items-center w-full">
+                    <div className="flex justify-center items-center w-fit gap-2 bg-gray-400/10 border border-gray-400/10 px-0.5 rounded-[10px] min-w-[300px] h-[42px]">
                     <span onClick={() => setActiveTab?.("textbooks")} className={`flex justify-center items-center gap-2 px-4 py-1.5 rounded-l-[10px] w-[100%] transition-[.25s] ${activeTab === "textbooks" ? "bg-amber-400 text-black" : ""}`}>
                         <BookOpen className="w-[16px] h-[16px]"/>
                         <p className="whitespace-nowrap">Textbooks ({textbooks.length})</p>
@@ -227,74 +248,73 @@ export default function MarketplaceView({ products, categories, courses, setTab,
                         <Package className="w-[16px] h-[16px]"/>
                         <p className="whitespace-nowrap">Items ({items.length})</p>
                     </span>
+                    </div>
+
+                    <span className="flex justify-center items-center gap-2 text-[15px] bg-gray-400/10 px-4 py-2 rounded-[8px] border border-gray-200/10 transition-[all .25s] hover:text-gray-200/50" onClick={() => setShowFilters(!isShowFilters)}><SlidersHorizontal size={18}/> Filters</span>
                 </div>
 
-                <span className="flex justify-center items-center gap-2 text-[15px] bg-gray-400/10 px-4 py-2 rounded-[8px] border border-gray-200/10 transition-[all .25s] hover:text-gray-200/50"><SlidersHorizontal size={18}/> Filters</span>
+                <div className="flex justify-start items-center w-full gap-2">
+                    {
+                        filters.map((filter, i) => (
+                            <span key={i} className={`flex justify-center items-center gap-1 text-[13px] text-[#444] font-[600] cursor-pointer px-4 py-2 rounded-[2rem] ${i === currFilterIdx ? "bg-gray-400/10 text-[#666] border border-gray-200/10" : "hover:bg-gray-500/10 hover:text-[#555]"}`} onClick={() => {
+                                setCurrFilterIdx(i);
+                                void changeSortFilter(filter.sort)
+                            }}>
+                                {filter.name}
+                                {filter.icon}
+                            </span>
+                        ))
+                    }
+                </div>
             </div>
 
-            <div className="flex justify-between items-center w-full p-4">
-                {activeTab === "textbooks" ?
+            {
+                isShowFilters &&
 
-                    <div className="flex justify-between items-center w-full p-4">
-                        <div>
-                            <h2 className="text-black text-[22px] font-bold">Course Textbooks</h2>
-                            <p className="text-[#999]">{textbooks.length} {textbooks.length === 1 ? "textbook" : "textbooks"} available</p>
-                        </div>
+                <div className="flex justify-between items-center w-full">
+                    {activeTab === "textbooks" ?
 
-                        <div className="flex items-center justify-end p-4 gap-2">
-                            <div className="flex flex-col items-start justify-center p-4 gap-2">
-                                <h3 className="text-[14px] font-[600]">Course filter</h3>
-                                <select onChange={ changeCurrentCourseFilter } name="course" id="course" className="bg-gray-200/60 text-[12px] px-4 py-2 rounded-[8px] font-[500] w-[150px] outline-0">
-                                    <option value="All Courses">All Courses</option>
-                                    {courses?.map((c: Course) => (
-                                        <option key={c.id} value={c.name}>{c.name}</option>
-                                    ))}
-                                </select>
+                        <div className="flex flex-col justify-center items-start w-full gap-4 p-4 bg-gray-400/10 rounded-[10px] border border-gray-200/15">
+                            <div className="flex justify-between items-center w-full">
+                                <h2 className="uppercase font-[600] text-[14px] text-[#666]">Filter by course</h2>
+                                <X size={14} cursor="pointer" onClick={(e) => {
+                                    e.stopPropagation();
+                                    setShowFilters(false);
+                                }} />
                             </div>
 
-                            <div className="flex flex-col items-start justify-center p-4 gap-2">
-                                <h3 className="text-[14px] font-[600]">Sort By</h3>
-                                <select onChange={ changeSortFilter } name="sort" id="sort" className="bg-gray-200/60 text-[12px] px-4 py-2 rounded-[8px] w-[150px] font-[500] outline-0">
-                                    <option value="recently listed">Recently Listed</option>
-                                    <option value="low-high">Price: Low to High</option>
-                                    <option value="high-low">Price: High to Low</option>
-                                    <option value="sellers">Top Sellers</option>
-                                </select>
+                            <div className="flex justify-start items-center w-full pr-1 gap-2 overflow-x-auto scroll-hide">
+                                <span className={`flex justify-center items-center text-[12px] text-[#444] font-[600] cursor-pointer px-4 py-2 rounded-[2rem] border whitespace-nowrap ${course === "All Courses" ? "bg-amber-400/10 text-[#ffb84d] border-amber-400/20": "bg-gray-600/10 text-[#666] border-gray-200/10"}`} onClick={() => changeCourseFilter("All Courses")}>All Courses</span>
+                                {
+                                    courses?.map((c, i) => (
+                                        <span key={i} className={`flex justify-center items-center text-[12px] text-[#444] font-[600] cursor-pointer px-4 py-2 rounded-[2rem] border whitespace-nowrap ${c.code === course ? "bg-amber-400/10 text-[#ffb84d] border-amber-400/20" : "bg-gray-600/10 text-[#666] border-gray-200/10"}`} onClick={() => changeCourseFilter(c?.code ?? "")}>{c.code}</span>
+                                    ))
+                                }
                             </div>
                         </div>
-                    </div>
-                    :
-                    <div className="flex justify-between items-center w-full p-4">
-                        <div>
-                            <h2 className="text-black text-[22px] font-bold">Student Items</h2>
-                            <p className="text-[#999]">{items.length} {items.length === 1 ? "item" : "items"} available</p>
-                        </div>
-
-                        <div className="flex items-center justify-end p-4 gap-2">
-                            <div className="flex flex-col items-start justify-center p-4 gap-2">
-                                <h3 className="text-[14px] font-[600]">Category</h3>
-                                <select onChange={ changeCategoryFilter } name="course" id="course" className="bg-gray-200/60 text-[12px] px-4 py-2 rounded-[8px] font-[500] w-[150px] outline-0">
-                                    <option value="All Courses">All Categories</option>
-                                    {Categories.map((c: Category) => (
-                                        <option value={c.name} key={c._id}>{c.slug}</option>
-                                    ))}
-                                </select>
+                        :
+                        <div className="flex flex-col justify-center items-start w-full gap-4 p-4 bg-gray-400/10 rounded-[10px] border border-gray-200/15">
+                            <div className="flex justify-between items-center w-full">
+                                <h2 className="uppercase font-[600] text-[14px] text-[#666]">Filter by category</h2>
+                                <X size={14} cursor="pointer" onClick={(e) => {
+                                    e.stopPropagation();
+                                    setShowFilters(false);
+                                }} />
                             </div>
 
-                            <div className="flex flex-col items-start justify-center p-4 gap-2">
-                                <h3 className="text-[14px] font-[600]">Sort By</h3>
-                                <select onChange={ changeSortFilter } name="sort" id="sort" className="bg-gray-200/60 text-[12px] px-4 py-2 rounded-[8px] w-[150px] font-[500] outline-0">
-                                    <option value="recently listed">Recently Listed</option>
-                                    <option value="low-high">Price: Low to High</option>
-                                    <option value="high-low">Price: High to Low</option>
-                                    <option value="sellers">Top Sellers</option>
-                                </select>
+                            <div className="flex justify-start items-center w-full pr-1 gap-2 overflow-x-auto scroll-hide">
+                                <span className={`flex justify-center items-center text-[12px] text-[#444] font-[600] cursor-pointer px-4 py-2 rounded-[2rem] border whitespace-nowrap ${category === "All Categories" ? "bg-amber-400/10 text-[#ffb84d] border-amber-400/20": "bg-gray-600/10 text-[#666] border-gray-200/10"}`} onClick={() => changeCategoryFilter("All Categories")}>All Categories</span>
+                                {
+                                    itemCategories?.map((c, i) => (
+                                        <span key={i} className={`flex justify-center items-center text-[12px] text-[#444] font-[600] cursor-pointer px-4 py-2 rounded-[2rem] border whitespace-nowrap ${c.slug === category ? "bg-amber-400/10 text-[#ffb84d] border-amber-400/20" : "bg-gray-600/10 text-[#666] border-gray-200/10"}`} onClick={() => changeCategoryFilter(c.slug ?? "")}>{c.name}</span>
+                                    ))
+                                }
                             </div>
                         </div>
-                    </div>
-                }
+                    }
 
-            </div>
+                </div>
+            }
 
             {
                 textbooks && items &&
@@ -311,53 +331,80 @@ export default function MarketplaceView({ products, categories, courses, setTab,
                                         </div>
                                     </div>
                                     :
-                                    <div className="grid grid-cols-4 gap-4 w-full">
-                                        {
-                                            textbooks.map((book) => (
-                                                <div key={book._id} className="group flex flex-col items-start justify-start relative bg-gray-400/15 border border-gray-400/50 rounded-[5px] hover:border hover:border-purple-400 transition-all duration-250">
-                                                    <div className="flex items-center justify-center w-full relative">
-                                                        <div className="w-fit h-fit">
-                                                            <img src={`${book.images[0]}`} alt={`${book.tags[0] + " textbook"}`} className="w-[400px] h-[250px] rounded-t-[5px]"/>
-                                                        </div>
-                                                    </div>
+                                    <div className="flex flex-col items-center justify-center w-full gap-4">
+                                        <div>{/*top-rated book*/}</div>
 
-                                                    <div className="flex flex-col justify-center items-start w-full p-5 gap-[2px]">
-                                                        <div>
-                                                            {/*course*/}
-                                                        </div>
+                                        <div className="flex justify-between items-center w-full">
+                                            <h2 className="text-[14px] font-[600] text-[#666]">{course === "All Courses" ? "All Textbooks" : course}</h2>
+                                            <hr className="w-[82%] opacity-[0.3]"/>
+                                            <p className="text-[14px] font-[600] text-[#666]">{textbooks.length} {textbooks.length === 1 ? "Listing" : "Listings"}</p>
+                                        </div>
 
-                                                        <h2 className="text-black font-[600] text-[18px]">{book.title}</h2>
-                                                        <p className="text-[12px] text-[#333]">{book.description}</p>
-
-                                                        <div className="flex items-center justify-start w-full gap-4 pt-4">
-                                                            <span className="flex justify-center items-center text-black text-[14px] rounded-[4px] border border-gray-400 px-5 h-[20px] py-1">{book.condition}</span>
-                                                            <p className="text-[#999] text-[14px]">{book._id}</p>
-                                                        </div>
-
-                                                        <div className="flex items-center justify-start w-full gap-1 py-4">
-                                                            <span style={{ background: color }} className="flex justify-center items-center w-[16px] h-[16px] rounded-[50%] p-4.5 text-[14px] text-white">{formatInit(sellers[book.sellerId])}</span>
-                                                            <h3 className="text-[#333] text-[15px] font-[400]">{sellers[book.sellerId]}</h3>
-                                                            <ShieldCheck className="text-blue-700 w-[18px] h-[18px]"/>
-                                                        </div>
-
-                                                        <hr className="w-full"/>
-
-                                                        <div className="flex items-center justify-between w-full py-4">
-                                                            <div>
-                                                                <h2 className="text-black text-[25px] font-[500]">R{book.price}</h2>
+                                        <div className="grid grid-cols-4 gap-4 w-full">
+                                            {
+                                                textbooks.map((book) => (
+                                                    <div key={book._id} className="group flex flex-col items-start justify-start relative bg-gray-400/15 border border-gray-400/50 rounded-[5px] hover:border hover:border-amber-400 hover:translate-y-[-8px] transition-[.5s ease-in-out] duration-400">
+                                                        <div className="flex items-center justify-center w-full relative">
+                                                            <div className="w-fit h-fit relative overflow-hidden">
+                                                                <img src={`${book.images[0]}`} alt={`${book.tags[0] + " textbook"}`} className="group-hover:scale-[1.05] w-[400px] h-[250px] rounded-[5px] transition-[.5s ease-in-out] duration-400"/>
                                                             </div>
 
+                                                            <div className="absolute bottom-0 inset-x-0 p-3">
+                                                                <div className="flex items-center justify-between mb-1">
+                                                                    <span className="px-2 py-0.5 rounded-md bg-black/50 backdrop-blur-sm text-[#ffb84d] text-[10px] font-bold tracking-wider">
+
+                                                                    </span>
+                                                                    <span className="flex items-center gap-1">
+                                                                        <span className="w-2 h-2 rounded-full" style={{ background: color }} />
+                                                                        <span className="text-[10px] text-white/60 font-medium">{book.condition}</span>
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <hr className="w-full opacity-0 group-hover:opacity-100"/>
+
+                                                        <div className="flex flex-col justify-center items-start w-full h-full py-4 px-4 gap-[2px]">
                                                             <div>
-                                                                <span onClick={() => contactSeller(book)}  className="flex justify-start items-center w-full bg-black text-white px-6 py-2 gap-2 rounded-[10px] cursor-pointer hover:bg-black/80">
-                                                                    <MessageCircle/>
+                                                                {/*course*/}
+                                                            </div>
+
+                                                            <h2 className="text-white font-[600] text-[14px] whitespace-nowrap">{book.title}</h2>
+                                                            <p className="text-[12px] text-[#999] leading-6 line-clamp-3 flex-grow">{book.description}</p>
+
+                                                            <div className="flex items-center justify-start w-full gap-1">
+                                                                {
+                                                                    book.tags.map((tag, i) => (
+                                                                        i <= 4 && <div key={i} className="text-[12px] text-[#fff] mt-4 backdrop-blur-sm bg-white/[0.02] border border-white/[0.06] p-1 rounded-[2px]">{tag}</div>
+                                                                    ))
+                                                                }
+                                                            </div>
+
+                                                            <div className="flex items-center justify-start w-full gap-1 py-4">
+                                                                <span style={{ background: color }} className="flex justify-center items-center w-[14px] h-[14px] rounded-[50%] p-4 text-[14px] text-white">{formatInit(sellers[book.sellerId])}</span>
+                                                                <h3 className="text-[#fff] text-[14px] font-[600]">{sellers[book.sellerId]}</h3>
+                                                                <ShieldCheck className="text-blue-700 w-[18px] h-[18px] ml-auto"/>
+                                                            </div>
+
+                                                            <hr className="w-full"/>
+
+                                                            <div className="flex items-center justify-between w-full h-full pt-4 flex-1">
+                                                                <div>
+                                                                    <h2 className="text-amber-400 text-[25px] font-[600]">R{book.price}</h2>
+                                                                </div>
+
+                                                                <div>
+                                                                <span onClick={() => contactSeller(book)}  className="flex justify-start items-center w-full text-[14px] bg-amber-400/5 text-amber-400 border border-amber-400/20 px-4 py-2 gap-2 rounded-[8px] cursor-pointer hover:bg-amber-400/10">
+                                                                    <MessageCircle size={16}/>
                                                                     Contact
                                                                 </span>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                            ))
-                                        }
+                                                ))
+                                            }
+                                        </div>
                                     </div>
                             )
 
@@ -377,38 +424,59 @@ export default function MarketplaceView({ products, categories, courses, setTab,
                                     <div className="grid grid-cols-4 gap-4 w-full">
                                         {
                                             items.map((item) => (
-                                                <div key={item._id} className="group flex flex-col items-start justify-start relative bg-gray-400/15 border border-gray-400/50 rounded-[5px] hover:border hover:border-purple-400 transition-all duration-250">
+                                                <div key={item._id} className="group flex flex-col items-start justify-start relative bg-gray-400/15 border border-gray-400/50 rounded-[5px] hover:border hover:border-amber-400 hover:translate-y-[-8px] transition-[.5s ease-in-out] duration-400">
                                                     <div className="flex items-center justify-center w-full relative">
-                                                        <img src={`${item.images[0]}`} alt={`${item.tags[0]}`} className="w-[400px] h-[250px] rounded-t-[5px]" />
+                                                        <div className="w-fit h-fit relative overflow-hidden">
+                                                            <img src={`${item.images[0]}`} alt={`${item.tags[0] + " item"}`} className="group-hover:scale-[1.05] w-[400px] h-[250px] rounded-[5px] transition-[.5s ease-in-out] duration-400"/>
+                                                        </div>
+
+                                                        <div className="absolute bottom-0 inset-x-0 p-3">
+                                                            <div className="flex items-center justify-between mb-1">
+                                                                    <span className="px-2 py-0.5 rounded-md bg-black/50 backdrop-blur-sm text-[#ffb84d] text-[10px] font-bold tracking-wider">
+
+                                                                    </span>
+                                                                <span className="flex items-center gap-1">
+                                                                        <span className="w-2 h-2 rounded-full" style={{ background: color }} />
+                                                                        <span className="text-[10px] text-white/60 font-medium">{item.condition}</span>
+                                                                    </span>
+                                                            </div>
+                                                        </div>
                                                     </div>
 
-                                                    <div className="flex flex-col justify-center items-start w-full p-5 gap-[2px]">
-                                                        <div></div>
+                                                    <hr className="w-full opacity-0 group-hover:opacity-100"/>
 
-                                                        <h2 className="text-black font-[600] text-[18px]">{item.title}</h2>
-                                                        <p className="text-[12px] text-[#333]">{item.description}</p>
+                                                    <div className="flex flex-col justify-center items-start w-full h-full py-4 px-4 gap-[2px]">
+                                                        <div>
+                                                            {/*course*/}
+                                                        </div>
 
-                                                        <div className="flex items-center justify-start w-full gap-4 pt-4">
-                                                            <span className="flex justify-center items-center text-black text-[14px] rounded-[4px] border border-gray-400 px-5 h-[20px] py-1">{item.condition}</span>
-                                                            <p className="text-[#999] text-[14px]">{item._id}</p>
+                                                        <h2 className="text-white font-[600] text-[14px] whitespace-nowrap">{item.title}</h2>
+                                                        <p className="text-[12px] text-[#999] leading-6 line-clamp-3 flex-grow">{item.description}</p>
+
+                                                        <div className="flex items-center justify-start w-full gap-1">
+                                                            {
+                                                                item.tags.map((tag, i) => (
+                                                                    i <= 4 && <div key={i} className="text-[12px] text-[#fff] mt-4 backdrop-blur-sm bg-white/[0.02] border border-white/[0.06] p-1 rounded-[2px]">{tag}</div>
+                                                                ))
+                                                            }
                                                         </div>
 
                                                         <div className="flex items-center justify-start w-full gap-1 py-4">
-                                                            <span style={{ background: color }} className="flex justify-center items-center w-[16px] h-[16px] rounded-[50%] p-4.5 text-[14px] text-white">{formatInit(sellers[item.sellerId])}</span>
-                                                            <h3 className="text-[#333] text-[15px] font-[400]">{sellers[item.sellerId]}</h3>
-                                                            <ShieldCheck className="text-blue-700 w-[18px] h-[18px]"/>
+                                                            <span style={{ background: color }} className="flex justify-center items-center w-[14px] h-[14px] rounded-[50%] p-4 text-[14px] text-white">{formatInit(sellers[item.sellerId])}</span>
+                                                            <h3 className="text-[#fff] text-[14px] font-[600]">{sellers[item.sellerId]}</h3>
+                                                            <ShieldCheck className="text-blue-700 w-[18px] h-[18px] ml-auto"/>
                                                         </div>
 
                                                         <hr className="w-full"/>
 
-                                                        <div className="flex items-center justify-between w-full py-4">
+                                                        <div className="flex items-center justify-between w-full h-full pt-4 flex-1">
                                                             <div>
-                                                                <h2 className="text-black text-[25px] font-[500]">R{item.price}</h2>
+                                                                <h2 className="text-amber-400 text-[25px] font-[600]">R{item.price}</h2>
                                                             </div>
 
                                                             <div>
-                                                                <span onClick={() => contactSeller(item)} className="flex justify-start items-center w-full bg-black text-white px-6 py-2 gap-2 rounded-[10px] cursor-pointer hover:bg-black/80">
-                                                                    <MessageCircle/>
+                                                                <span onClick={() => contactSeller(item)}  className="flex justify-start items-center w-full text-[14px] bg-amber-400/5 text-amber-400 border border-amber-400/20 px-4 py-2 gap-2 rounded-[8px] cursor-pointer hover:bg-amber-400/10">
+                                                                    <MessageCircle size={16}/>
                                                                     Contact
                                                                 </span>
                                                             </div>

@@ -152,7 +152,7 @@ export default function RecommendationsPage({ dismissed, setDismissed }: recomme
 
                                         <div className="flex flex-col justify-start items-start w-full gap-2">
                                             <h2 className="text-white font-[600] text-[22px]">Introduction to Algorithms</h2>
-                                            <span className="flex justify-start items-center w-full gap-2 text-[14px] bg-amber-400/5 text-[#ffb84d] p-4 rounded-[8px] border border-amber-300/10"><Brain width={16} height={16}/> Based on your CS course</span>
+                                            <span className="flex justify-start items-center w-full gap-2 text-[14px] bg-amber-400/5 text-[#ffb84d] p-4 rounded-[8px] border border-amber-300/10"><Brain size={14}/> Based on your CS course</span>
                                         </div>
                                     </div>
                                 </div>

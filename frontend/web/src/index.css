@@ -8,6 +8,7 @@
 body{
     overflow: hidden;
     background: #ffd39b;
+    transition: .25s ;
 }
 
 @layer utilities {

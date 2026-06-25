@@ -1,3 +1,5 @@
+//helper function to extract the initials from the name
+
 export default function formatInit(name: string) : string {
     if (!name) return "";
 
